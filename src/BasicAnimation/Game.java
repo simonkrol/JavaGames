@@ -6,7 +6,7 @@ import java.awt.RenderingHints;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") 
 public class Game extends JPanel {
     int x = 0;
     int y = 0;
