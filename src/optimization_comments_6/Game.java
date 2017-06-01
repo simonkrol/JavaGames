@@ -17,10 +17,10 @@ import javax.swing.KeyStroke;
 @SuppressWarnings("serial")
 
 public class Game extends JPanel {
-	final static double time=0.030;
+	final static double time=0.030;//The time between cycles, 1.0/time gives an average fps
 	MapGen map;
-	List<Character> character_entities=new ArrayList<Character>();
-	
+	//List<Character> character_entities=new ArrayList<Character>();
+	static Character character;
 	private static JPanel mainPanel;
 	private static Direction direction=new Direction();
 	
@@ -32,73 +32,63 @@ public class Game extends JPanel {
     static Game game;
     static int pixDist;
     static double movementL, movementR;
+    
+    
+    
     public void paint(Graphics g) {
         super.paint(g);
-        Graphics2D g2d = (Graphics2D) g;
+        
         xSize=getWidth();//Resize the given image
         ySize=getHeight();
+        
+        Graphics2D g2d = (Graphics2D) g;
         map.draw(g2d,xSize, ySize, this);
         //g2d.drawImage(game.currBack.background, 0, 0, xSize, ySize,this);
-        for (Character temp : character_entities)
+        
+        character.checkYCollision(map,(int)(character.xLoc*map.blocksWide));
+        movementL=(xSize*time*character.speedMod/xSize)/(map.blocksWide/4);
+        movementR=movementL;
+        
+        if(character.xLoc<=0)movementL=0;//Make sure the character is within the boundaries
+        if(character.xLoc+character.xSize>=1)movementR=0;
+        
+        switch(character.checkXCollision(map, (int)(character.xLoc*map.blocksWide)))//Prevent movement in the direction of collision
         {
-        	temp.checkYCollision(map,(int)(temp.xLoc*map.blocksWide));
-        	movementL=(xSize*time*temp.speedMod/xSize)/(map.blocksWide/4);
-        	movementR=movementL;
-        	if(temp.xLoc<=0)
-        	{
-        		movementL=0;
-        	}
-        	if(temp.xLoc+temp.xSize>=0.99)
-        	{
-        		movementR=0;
-        	}
-        	switch(temp.checkXCollision(map, (int)(temp.xLoc*map.blocksWide)))
-        	{
         	case"left":movementL=0;break;
         	case"right":movementR=0;break;
-        	}
-       		if(direction.right && !direction.left)
-        	{
-        		temp.xLoc+=movementR;
-        	}
-        	else if(direction.left && !direction.right)
-        	{
-        		temp.xLoc-=movementL;
-        	}
-        	temp.setY(direction.jump);
-        	
-        	g2d.drawImage(temp.sprite, (int)(temp.xLoc*xSize), (int)(temp.yLoc*ySize),(int)(temp.xSize*xSize), (int)(temp.ySize*ySize), this);
         }
-        /*for (Platform temp : currBack.platforms)
-        {
-           g2d.drawImage(currBack.platformImage, (int)(temp.xPos*xSize), (int)(temp.yPos*ySize),(int)(temp.xSize*xSize), (int)(temp.ySize*ySize), this);
-        }*/
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+       	if(direction.right && !direction.left)character.xLoc+=movementR;//Move
+        else if(direction.left && !direction.right)character.xLoc-=movementL;
+        
+        character.setY(direction.jump);//Deal with the y axis
+        
+        g2d.drawImage(character.sprite, (int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize), (int)(character.ySize*ySize), this);
+        //Redraw the character in their new position
+     
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
             RenderingHints.VALUE_ANTIALIAS_ON);
-    }
-    public void addChar(double x, double y,String sprite){
-    	Character newChar= new Character(x,y,0.7/game.map.blocksWide, 2.8/game.map.blocksWide,sprite, time);
-    	character_entities.add(newChar);
     }
 
     
 
 	public static void main(String[] args) throws InterruptedException {
         JFrame frame = new JFrame("Game Frame");
-        frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
+        frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        game.addChar(0.15, 0,"Resources/MinecraftSprite.png");
+        character = new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide,"Resources/MinecraftSprite.png", time);
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
-        frame.setSize(xSize, ySize);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         while (true) {
-            game.repaint();
+            game.repaint();//Repaint the game every time*1000 milliseconds
             Thread.sleep((int)(time*1000));
         }
     }
+	/*
+	 * Allow for the user to input keys.
+	 */
 	static JPanel KeyInputPanel(){
 		mainPanel=new JPanel();
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("UP"), "jump");
@@ -118,6 +108,9 @@ public class Game extends JPanel {
 		return mainPanel;
 		
 	}
+	/*
+	 * Perform an action based on the given command
+	 */
 	static class Action extends AbstractAction
     {
 		String action;
@@ -139,6 +132,10 @@ public class Game extends JPanel {
         } // end method actionPerformed()
         
     } // end class EnterAction
+	
+	/*
+	 * Direction class, used to determine which way to move the character
+	 */
 	static class Direction
 	{
 		boolean right;

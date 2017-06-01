@@ -11,51 +11,59 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MapGen
 {
 
-	Toolkit kit = Toolkit.getDefaultToolkit(); 
-	Image clouds, dirt, grass;
+	Toolkit kit = Toolkit.getDefaultToolkit(); //Class variables
+	Image clouds, dirt, grass; 
 	int blocksWide, blocksTall;
-	int[] grassy;
-	List<Platform> platforms;
+	int[] grassy;//Used to indicate at what y value the grass is at each x 
+	List<Platform> platforms; //Arraylist of all grass blocks to allow for collision checking
 	
 	
-	public MapGen()
+	public MapGen()//Collect images, create Platform list, create grassy array and generate a random integer as the map wideness
 	{
 		blocksWide= ThreadLocalRandom.current().nextInt(32, 64 + 1);
 		clouds=kit.getImage("Resources/SkyBackground.jpg");
 		dirt=kit.getImage("Resources/Dirt.png");
 		grass=kit.getImage("Resources/Grass.png");
+		platforms=new ArrayList<Platform>();
+		grassy=new int[blocksWide];
 		generateTerrain();
 		
 		
 		
 	}
+	/*
+	 * Generates the terrain for the map.
+	 */
 	public void generateTerrain()
 	{
 		int rand;
-		platforms=new ArrayList<Platform>();
-		int starting=(int)(blocksWide*0.45);
+		int starting=(int)(blocksWide*0.45);//Choose the first grass block
 		blocksTall=(int)(blocksWide*0.6);
-		grassy=new int[blocksWide];
 		for(int i=0;i<blocksWide;i++)
 		{
-			rand=ThreadLocalRandom.current().nextInt(0,3);
+			//Determine whether the next block will go up a level, down a level or stay the same (55% chance of staying the same)
+			rand=ThreadLocalRandom.current().nextInt(0,3);	
 			if(rand!=0)
 			{
 				rand=ThreadLocalRandom.current().nextInt(-1,2);
 			}
-			if(starting+rand<blocksTall-3 && starting+rand>3)
+			if(starting+rand<blocksTall-2 && starting+rand>4)	//Make sure new position isn't too close to the top or bottom
 			{
 				starting+=rand;
 			}
 			grassy[i]=starting;
-			platforms.add(new Platform((double)i/(double)blocksWide,(double)starting/(double)blocksTall,1.0/(double)blocksWide,1.0/(double)blocksWide));
-		}		
+			//Generate a platform to allow for collision detection
+			platforms.add(new Platform((double)i/blocksWide,(double)starting/blocksTall,1.0/blocksWide,1.0/blocksWide));
+		}
 	}
+	/*
+	 * Draws all the components of the terrain on the canvas
+	 */
 	public void draw(Graphics2D g2d, int xSize, int ySize, ImageObserver newThis)
 	{
-		int grassY;
-		int size=xSize/blocksWide;
-		g2d.drawImage(clouds, 0, 0, xSize, ySize, newThis);
+		int grassY; //The y value of the current grass block
+		int size=xSize/blocksWide; //How big to make each block
+		g2d.drawImage(clouds, 0, 0, xSize, ySize, newThis);//Draw the initial background
 		for(int i=0;i<blocksWide;i++)
 		{
 			grassY=grassy[i];
