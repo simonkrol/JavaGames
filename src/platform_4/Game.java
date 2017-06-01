@@ -23,6 +23,7 @@ public class Game extends JPanel {
 	
 	private static JPanel mainPanel;
 	private static Direction direction=new Direction();
+	private static Direction tempDirection=direction;;
 	
 	public Game(int x, int y, String dest, String plat){
 		currBack=new Background(x,y,dest, 5, plat);
@@ -31,6 +32,7 @@ public class Game extends JPanel {
     static int ySize=600;
     static Game game;
     static int pixDist;
+    static double movementL, movementR;
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
@@ -39,15 +41,23 @@ public class Game extends JPanel {
         g2d.drawImage(game.currBack.background, 0, 0, xSize, ySize,this);
         for (Character temp : character_entities)
         {
+        	temp.checkYCollision(currBack);
+        	movementL=(xSize*time*temp.speedMod/xSize)/currBack.length;
+        	movementR=movementL;
+        	switch(temp.checkXCollision(currBack))
+        	{
+        	case"left":movementL=0;break;
+        	case"right":movementR=0;break;
+        	}
         	if(temp.mainChar)
         	{
         		if(direction.right && !direction.left)
         		{
-        			temp.xLoc+=(xSize*time*temp.speedMod/xSize)/currBack.length;
+        			temp.xLoc+=movementR;
         		}
         		else if(direction.left && !direction.right)
         		{
-        			temp.xLoc-=(xSize*time*temp.speedMod/xSize)/currBack.length;
+        			temp.xLoc-=movementL;
         		}
         		temp.setY(direction.jump);
         	}
@@ -72,7 +82,7 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         game=new Game(xSize,ySize, "Resources/DabbingBackground.png", "Resources/Platform.png");
         game.addChar(0.2, 0.6, 0.05, 0.20, "Resources/MinecraftSprite.png", true);
-        game.currBack.addPlatform(0.3, 0.7, 0.4, 0.1);
+        game.currBack.addPlatform(0.3, 0.45, 0.4, 0.1);
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setSize(xSize, ySize);
