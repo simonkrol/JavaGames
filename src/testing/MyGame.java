@@ -39,9 +39,18 @@ public class MyGame
 
     public static void main( String[] args )
     {
-    	boolean[][] a = new boolean[5][5];
-    	a[1][1]=true;
-    	System.out.println(a[1][1]);
+    	for(int i=0; i<10;i++)
+    	{
+	    	for (int j=0; j<10;j++)
+			{
+				if(1>0)
+				{
+					
+					System.out.println("Still here");
+					break;
+				}
+			}
+    	}
     } // end method main()
     
 }

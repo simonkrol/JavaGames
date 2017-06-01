@@ -103,25 +103,25 @@ public class Game extends JPanel {
 		mainPanel=new JPanel();
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("UP"), "jump");
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released UP"), "jumpR");
-		mainPanel.getActionMap().put("jump", new MoveAction("jump"));
-		mainPanel.getActionMap().put("jumpR", new MoveAction("jumpR"));
+		mainPanel.getActionMap().put("jump", new Action("jump"));
+		mainPanel.getActionMap().put("jumpR", new Action("jumpR"));
 		
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "right");
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released RIGHT"), "rightR");
-		mainPanel.getActionMap().put("right", new MoveAction("right"));
-		mainPanel.getActionMap().put("rightR", new MoveAction("rightR"));
+		mainPanel.getActionMap().put("right", new Action("right"));
+		mainPanel.getActionMap().put("rightR", new Action("rightR"));
 		
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("LEFT"), "left");
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released LEFT"), "leftR");
-		mainPanel.getActionMap().put("left", new MoveAction("left"));
-		mainPanel.getActionMap().put("leftR", new MoveAction("leftR"));
+		mainPanel.getActionMap().put("left", new Action("left"));
+		mainPanel.getActionMap().put("leftR", new Action("leftR"));
 		return mainPanel;
 		
 	}
-	static class MoveAction extends AbstractAction
+	static class Action extends AbstractAction
     {
 		String action;
-		public MoveAction(String command){
+		public Action(String command){
 			action=command;
 		}
         public void actionPerformed( ActionEvent tf )

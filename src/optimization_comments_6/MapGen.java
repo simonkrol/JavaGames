@@ -8,15 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-
-
 public class MapGen
 {
 
 	Toolkit kit = Toolkit.getDefaultToolkit(); 
 	Image clouds, dirt, grass;
 	int blocksWide, blocksTall;
-	boolean[][] grassy;
+	int[] grassy;
 	List<Platform> platforms;
 	
 	
@@ -37,7 +35,7 @@ public class MapGen
 		platforms=new ArrayList<Platform>();
 		int starting=(int)(blocksWide*0.45);
 		blocksTall=(int)(blocksWide*0.6);
-		grassy=new boolean[blocksWide][blocksTall];
+		grassy=new int[blocksWide];
 		for(int i=0;i<blocksWide;i++)
 		{
 			rand=ThreadLocalRandom.current().nextInt(0,3);
@@ -49,29 +47,23 @@ public class MapGen
 			{
 				starting+=rand;
 			}
-			grassy[i][starting]=true;
+			grassy[i]=starting;
 			platforms.add(new Platform((double)i/(double)blocksWide,(double)starting/(double)blocksTall,1.0/(double)blocksWide,1.0/(double)blocksWide));
 		}		
 	}
 	public void draw(Graphics2D g2d, int xSize, int ySize, ImageObserver newThis)
 	{
-		boolean grassed;
+		int grassY;
+		int size=xSize/blocksWide;
 		g2d.drawImage(clouds, 0, 0, xSize, ySize, newThis);
 		for(int i=0;i<blocksWide;i++)
 		{
-			grassed=false;
-			for (int j=0; j<blocksTall;j++)
-			{
-				if(grassed)
-				{
-					g2d.drawImage(dirt, i*xSize/blocksWide,j*ySize/blocksTall, xSize/blocksWide+2, 2*ySize/blocksWide, newThis);
-				}
-				else if(grassy[i][j])
-				{
-					g2d.drawImage(grass, i*xSize/blocksWide,j*ySize/blocksTall, xSize/blocksWide+2, xSize/blocksWide, newThis);
-					grassed=true;
-				}
-			}
+			grassY=grassy[i];
+			g2d.drawImage(grass, i*xSize/blocksWide,grassY*ySize/blocksTall, size+2, size, newThis);
+			//Draw the grass and fill in all the dirt blocks below it, then break and move to the next block
+			g2d.drawImage(dirt, i*xSize/blocksWide,(grassY+1)*ySize/blocksTall, size+2, 20*size, newThis);
+			
+			
 		}
 	}
 
