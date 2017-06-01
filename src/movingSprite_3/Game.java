@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 @SuppressWarnings("serial")
 
 public class Game extends JPanel {
+	final static double time=0.030;
 	Background currBack;
 	List<Character> character_entities=new ArrayList<Character>();
 	
@@ -24,11 +25,12 @@ public class Game extends JPanel {
 	private static Direction direction=new Direction();
 	
 	public Game(int x, int y, String dest){
-		currBack=new Background(x,y,dest);
+		currBack=new Background(x,y,dest, 5);
 	}
     static int xSize=1200;
     static int ySize=600;
     static Game game;
+    static int pixDist;
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
@@ -40,20 +42,22 @@ public class Game extends JPanel {
         	{
         		if(direction.right && !direction.left)
         		{
-        			temp.xLoc+=5;
+        			temp.xLoc+=(xSize*time*temp.speedMod/xSize)/currBack.length;
         		}
         		else if(direction.left && !direction.right)
         		{
-        			temp.xLoc-=5;
+        			temp.xLoc-=(xSize*time*temp.speedMod/xSize)/currBack.length;
         		}
+        		temp.setY(direction.jump);
         	}
-        	g2d.drawImage(temp.sprite, temp.xLoc, temp.yLoc,temp.xSize, temp.ySize, this);
+        	g2d.drawImage(temp.sprite, (int)(temp.xLoc*xSize), (int)(temp.yLoc*ySize),(int)(temp.xSize*xSize), (int)(temp.ySize*ySize), this);
         }
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
     }
-    public void addChar(int x, int y,int xS, int yS, String sprite, boolean main){
-    	Character newChar= new Character(x,y,xS, yS,sprite, main);
+    public void addChar(double x, double y,double xS, double yS, String sprite, boolean main){
+    	Character newChar= new Character(x,y,xS, yS,sprite, main, time);
+    	newChar.setSpeed(1.6);
     	character_entities.add(newChar);
     }
 
@@ -62,7 +66,7 @@ public class Game extends JPanel {
 	public static void main(String[] args) throws InterruptedException {
         JFrame frame = new JFrame("Game Frame");
         game=new Game(xSize,ySize, "Resources/DabbingBackground.png");
-        game.addChar(100, 480, 60, 120, "Resources/MinecraftSprite.png", true);
+        game.addChar(0.2, 0.6, 0.05, 0.20, "Resources/MinecraftSprite.png", true);
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setSize(xSize, ySize);
@@ -71,7 +75,7 @@ public class Game extends JPanel {
         
         while (true) {
             game.repaint();
-            Thread.sleep(15);
+            Thread.sleep((int)(time*1000));
         }
     }
 	static JPanel KeyInputPanel(){
@@ -110,7 +114,6 @@ public class Game extends JPanel {
         		case"left":direction.left=true;break;
         		case"leftR":direction.left=false;break;
         	}
-        	System.out.println(direction);
             
         } // end method actionPerformed()
         
