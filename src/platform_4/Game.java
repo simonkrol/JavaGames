@@ -44,6 +44,14 @@ public class Game extends JPanel {
         	temp.checkYCollision(currBack);
         	movementL=(xSize*time*temp.speedMod/xSize)/currBack.length;
         	movementR=movementL;
+        	if(temp.xLoc<=0)
+        	{
+        		movementL=0;
+        	}
+        	if(temp.xLoc+temp.xSize>=0.99)
+        	{
+        		movementR=0;
+        	}
         	switch(temp.checkXCollision(currBack))
         	{
         	case"left":movementL=0;break;
@@ -83,6 +91,9 @@ public class Game extends JPanel {
         game=new Game(xSize,ySize, "Resources/DabbingBackground.png", "Resources/Platform.png");
         game.addChar(0.2, 0.6, 0.05, 0.20, "Resources/MinecraftSprite.png", true);
         game.currBack.addPlatform(0.3, 0.45, 0.4, 0.1);
+        game.currBack.addPlatform(0, 0.75, 0.3, 0.1);
+        //game.currBack.addPlatform(-0.1, 0, 0.1, 1);
+        //game.currBack.addPlatform(0, 0.75, 0.3, 0.1);
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setSize(xSize, ySize);

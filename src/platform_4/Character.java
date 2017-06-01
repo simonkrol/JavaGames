@@ -21,8 +21,7 @@ public class Character {
 	{
 		if(onGround && pressed)
 		{
-			System.out.println("Jumping");
-			yVel=5.422;
+			yVel=12;//5.422;
 			yAcc=-9.81;
 			onGround=false;
 		}
@@ -45,16 +44,31 @@ public class Character {
 		{
 			if(xLoc<=temp.xPos+temp.xSize && xLoc+xSize>=temp.xPos)
 			{
-				if(yLoc<=temp.yPos+temp.ySize)
+				if(yLoc<=temp.yPos+temp.ySize&&yLoc>=temp.yPos)
 				{
 					if(yVel>0)
 					{
 						yVel=0;
 					}
 				}
+				if(yLoc+ySize<=temp.yPos+temp.ySize&&yLoc+ySize>=temp.yPos)
+				{
+					if(!(temp.xPos+temp.xSize-xLoc<0.02||xLoc+xSize-temp.xPos<0.02))
+					{
+						if(yVel<0)
+						{
+							System.out.println("Test");//Fix this!
+							yVel=0;
+							//yAcc=0;
+							onGround=true;
+						}
+				
+					}
+				}
 				
 				
 			}
+			
 		}
 	}
 	public String checkXCollision(Background background)
