@@ -8,6 +8,7 @@ public class Background extends JPanel {
 	int xSize,ySize, length;
 	Toolkit kit = Toolkit.getDefaultToolkit(); 
 	Image background;
+	
 	public Background(int xS, int yS, String dest, int len){
 		xSize=xS;
 		ySize=yS;
