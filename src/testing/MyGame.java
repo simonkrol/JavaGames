@@ -39,18 +39,8 @@ public class MyGame
 
     public static void main( String[] args )
     {
-    	for(int i=0; i<10;i++)
-    	{
-	    	for (int j=0; j<10;j++)
-			{
-				if(1>0)
-				{
-					
-					System.out.println("Still here");
-					break;
-				}
-			}
-    	}
+    	String dest="Resources/Mage/Walk"+(Integer.toString(5))+".png";
+    	System.out.println(dest);
     } // end method main()
     
 }
