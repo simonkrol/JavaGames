@@ -23,6 +23,7 @@ public class Game extends JPanel {
 	static List<Character> character_entities=new ArrayList<Character>();
 	int currMain=0;
 	static Character mainChar;
+	static Character secondaryChar;
 	static Character tempChar;
 	private static JPanel mainPanel;
 	
@@ -43,49 +44,14 @@ public class Game extends JPanel {
         
         xSize=getWidth();
         ySize=getHeight();
-        mainChar=character_entities.get(currMain);
         Graphics2D g2d = (Graphics2D) g;
         map.draw(g2d,xSize, ySize, this);//Draws the clouds and grass/dirt
     	boolean changeY;
         boolean changeX;
         for(Character temp:character_entities)
         {
-        	changeY=temp.setY(map);//Deal with the y axis
-            changeX=temp.setX(map);
-            if(changeX && temp.direction.right)temp.right=true;
-            else if(changeX)temp.right=false;
-        	if(changeY&& temp.jumped)
-        	{
-        		if(temp.justjumped)
-        		{
-	        		temp.animationIndex=0;
-	        		temp.spriteIndex=0;
-	        	}
-	        	else if(temp.animationIndex!=2)
-	        	{
-	        		temp.spriteIndex=0;
-	        		temp.animationIndex=2;
-	        		temp.repeat=false;
-	        	}
-        		temp.spriteIndex++;
-	        }
-	        else if(changeX)
-	        {
-	        	if(temp.animationIndex!=1)
-	        	{
-	        		temp.spriteIndex=0;
-	        		temp.animationIndex=1;
-	        		temp.repeat=true;
-	        	}
-	        	temp.spriteIndex++;
-	        }
-	        else
-	        {
-	        	temp.animationIndex=0;
-	        	temp.spriteIndex=0;
-	        }
-        	sprite=temp.getAnimationSprite();
-        	g2d.drawImage(sprite,(int)(temp.xLoc*xSize), (int)(temp.yLoc*ySize),(int)(temp.xSize*xSize*1.3), (int)(temp.ySize*ySize), this);
+        	
+        	g2d.drawImage(temp.Animate(map),(int)(temp.xLoc*xSize), (int)(temp.yLoc*ySize),(int)(temp.xSize*xSize*1.3), (int)(temp.ySize*ySize), this);
         }
         
        
@@ -100,8 +66,8 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        mainChar=new Character(0.3,0.15,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, "Blue");
-        character_entities.add(mainChar);
+        secondaryChar=new Character(0.3,0.15,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, "Blue");
+        character_entities.add(secondaryChar);
         mainChar=new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide, time,"Orange");
         character_entities.add(mainChar);
         frame.add(KeyInputPanel());//Add Key Reception
@@ -138,6 +104,21 @@ public class Game extends JPanel {
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released SPACE"), "spaceR");
 		mainPanel.getActionMap().put("space", new Action("space"));
 		mainPanel.getActionMap().put("spaceR", new Action("spaceR"));
+		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("W"), "w");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released W"), "wR");
+		mainPanel.getActionMap().put("w", new Action("w"));
+		mainPanel.getActionMap().put("wR", new Action("wR"));
+		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("A"), "a");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released A"), "aR");
+		mainPanel.getActionMap().put("a", new Action("a"));
+		mainPanel.getActionMap().put("aR", new Action("aR"));
+		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("D"), "d");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released D"), "dR");
+		mainPanel.getActionMap().put("d", new Action("d"));
+		mainPanel.getActionMap().put("dR", new Action("dR"));
 		return mainPanel;
 		
 	}
@@ -162,6 +143,14 @@ public class Game extends JPanel {
         		case"leftR":mainChar.direction.left=false;break;
         		case"space":mainChar.direction.superJump=true;break;
         		case"spaceR":mainChar.direction.superJump=false;break;
+        		
+        		case"w":secondaryChar.direction.jump=true;break;
+        		case"wR":secondaryChar.direction.jump=false;break;
+        		case"d":secondaryChar.direction.right=true;break;
+        		case"dR":secondaryChar.direction.right=false;break;
+        		case"a":secondaryChar.direction.left=true;break;
+        		case"aR":secondaryChar.direction.left=false;break;
+        		
         	}
             
         } // end method actionPerformed()

@@ -155,11 +155,52 @@ public class Character {
 	public BufferedImage getAnimationSprite()
 	{
 		int temp[]=spriteValues[animationIndex];
-		spriteIndex/=temp[6];
-		if(!repeat&&spriteIndex>temp[5])spriteIndex=temp[5]-1;
-		else spriteIndex=spriteIndex%temp[5];
-		if(right)return spriteSheet.getSubimage(temp[0]+temp[2]*spriteIndex, temp[1], temp[3], temp[4]);
-		else return spriteSheet.getSubimage(1147-temp[0]-temp[3]-temp[2]*spriteIndex, temp[1]+622, temp[3], temp[4]);
+		int tempIndex=spriteIndex/temp[6];
+		if(!repeat&&tempIndex>temp[5])spriteIndex=temp[5]-1;
+		else tempIndex=tempIndex%temp[5];
+		if(tempIndex>0)System.out.println(tempIndex);
+		if(right)return spriteSheet.getSubimage(temp[0]+temp[2]*tempIndex, temp[1], temp[3], temp[4]);
+		else return spriteSheet.getSubimage(1147-temp[0]-temp[3]-temp[2]*tempIndex, temp[1]+622, temp[3], temp[4]);
+	}
+	
+	public BufferedImage Animate(MapGen map)
+	{
+		boolean changeY=setY(map);//Deal with the y axis
+        boolean changeX=setX(map);
+        
+        if(changeX && direction.right)right=true;
+        else if(changeX)right=false;
+    	if(changeY&& jumped)
+    	{
+    		if(justjumped)
+    		{
+        		animationIndex=0;
+        		spriteIndex=0;
+        	}
+        	else if(animationIndex!=2)
+        	{
+        		spriteIndex=0;
+        		animationIndex=2;
+        		repeat=false;
+        	}
+    		spriteIndex++;
+        }
+        else if(changeX)
+        {
+        	if(animationIndex!=1)
+        	{
+        		spriteIndex=0;
+        		animationIndex=1;
+        		repeat=true;
+        	}
+        	spriteIndex++;
+        }
+        else
+        {
+        	animationIndex=0;
+        	spriteIndex=0;
+        }
+    	return getAnimationSprite();
 	}
    
 }
