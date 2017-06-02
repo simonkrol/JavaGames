@@ -77,7 +77,7 @@ public class Game extends JPanel {
         }
         
         character.setY(direction.jump);//Deal with the y axis
-        g2d.drawImage(Character.getSprite((int)((movement_index%32+7)/8)+facing),(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize), (int)(character.ySize*ySize), this);
+        g2d.drawImage(Character.getSprite((int)((movement_index%32+7)/8)+facing),(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
         //Redraw the character in their new position
      
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
