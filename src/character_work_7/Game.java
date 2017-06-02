@@ -96,6 +96,11 @@ public class Game extends JPanel {
 		mainPanel.getActionMap().put("jump", new Action("jump"));
 		mainPanel.getActionMap().put("jumpR", new Action("jumpR"));
 		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "down");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released DOWN"), "downR");
+		mainPanel.getActionMap().put("down", new Action("down"));
+		mainPanel.getActionMap().put("downR", new Action("downR"));
+		
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"), "right");
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released RIGHT"), "rightR");
 		mainPanel.getActionMap().put("right", new Action("right"));
@@ -125,6 +130,16 @@ public class Game extends JPanel {
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released D"), "dR");
 		mainPanel.getActionMap().put("d", new Action("d"));
 		mainPanel.getActionMap().put("dR", new Action("dR"));
+		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("S"), "s");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released S"), "sR");
+		mainPanel.getActionMap().put("s", new Action("s"));
+		mainPanel.getActionMap().put("sR", new Action("sR"));
+		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("SHIFT"), "shift");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released SHIFT"), "shiftR");
+		mainPanel.getActionMap().put("shift", new Action("shift"));
+		mainPanel.getActionMap().put("shiftR", new Action("shiftR"));
 		return mainPanel;
 		
 	}
@@ -139,6 +154,7 @@ public class Game extends JPanel {
 		}
         public void actionPerformed( ActionEvent tf )
         {
+        	System.out.println(action);
         	switch(action)
         	{
         		case"jump":mainChar.direction.jump=true;break;
@@ -147,6 +163,8 @@ public class Game extends JPanel {
         		case"rightR":mainChar.direction.right=false;break;
         		case"left":mainChar.direction.left=true;break;
         		case"leftR":mainChar.direction.left=false;break;
+        		case"down":mainChar.direction.ability=true;break;
+        		case"downR":mainChar.direction.ability=false;break;
         		case"space":mainChar.direction.ability=true;break;
         		case"spaceR":mainChar.direction.ability=false;break;
         		
@@ -156,6 +174,10 @@ public class Game extends JPanel {
         		case"dR":secondaryChar.direction.right=false;break;
         		case"a":secondaryChar.direction.left=true;break;
         		case"aR":secondaryChar.direction.left=false;break;
+        		case"s":secondaryChar.direction.ability=true;break;
+        		case"sR":secondaryChar.direction.ability=false;break;
+        		
+        		case"shiftR":tempChar=mainChar;mainChar=secondaryChar;secondaryChar=tempChar;break;
         		
         	}
             

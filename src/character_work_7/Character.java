@@ -13,7 +13,7 @@ public class Character {
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Used to gather images 
 	public Direction direction=new Direction();
 	BufferedImage spriteSheet;
-	static int[][] spriteValues={{63,9,0,46,69,1,1,0},{40,99,80,40,69,4,5,0},{99,179,64,46,79,2,7,0},{615,189,65,46,166,4,5,0},{494,90,135,127,69,4,5,85}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
+	static int[][] spriteValues={{63,9,0,46,69,1,1,0},{40,99,80,40,69,4,11,0},{99,179,64,46,79,2,14,0},{615,189,65,46,166,4,11,0},{494,90,135,127,69,4,11,85}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
 	double xSize,ySize,yVel=0,yAcc=-9.81,xVel=0, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
 	boolean jumped=false;
@@ -52,8 +52,8 @@ public class Character {
 		if(onGround)
 		{
 			justjumped=true;
-			yVel=8.322*multi;
-			yAcc=-28.01;
+			yVel=8.022*multi;
+			yAcc=-25.01;
 			onGround=false;
 			jumped=true;
 		}
@@ -78,7 +78,7 @@ public class Character {
 	{
 		int current = (int) (xLoc*map.blocksWide);
 		String collision=checkXCollision(map,current);
-		xVel=(time*speedMod)/(map.blocksWide/4);
+		xVel=(time*speedMod)/(map.blocksWide/2.5);
 		if(xLoc<0)
 		{
 			if(direction.left)xVel=0;
