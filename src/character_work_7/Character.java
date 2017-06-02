@@ -2,10 +2,16 @@ package character_work_7;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Character {
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Used to gather images 
-	Image [] sprites=new Image[10];
+	final static int TILE_SIZE=69;
+	static BufferedImage spriteSheet=loadSprite();
 	double xSize,ySize,yVel=0,yAcc=-9.81, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
 	public Character(double x,double y,double xS, double yS, double t)
@@ -15,12 +21,12 @@ public class Character {
 		xSize=xS;
 		ySize=yS;
 		String dest;
-		for(int i=0; i<10;i++)
+		/*for(int i=0; i<10;i++)
 		{
 			dest="Resources/Mage/Walk"+(Integer.toString(i))+".png";
 			System.out.println(dest);
 			sprites[i]=kit.getImage(dest);
-		}
+		}*/
 		/*sprites[0]=kit.getImage("Resources/Mage/Walk0.png");
 		sprites[1]=kit.getImage("Resources/Mage/Walk1.png");
 		sprites[2]=kit.getImage("Resources/Mage/Walk2.png");
@@ -34,6 +40,19 @@ public class Character {
 
 		time=t;//Time is the time between frames
 	}
+	
+	public static BufferedImage loadSprite() {
+
+        BufferedImage sprite = null;
+
+        try {
+            sprite = ImageIO.read(new File("Resources/Mage/RedWalking.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return sprite;
+    }
 	public void setY(boolean pressed)
 	{
 		if(onGround && pressed)		//Only jump if on the ground and holding up
@@ -116,5 +135,12 @@ public class Character {
 		}
 		return "null";
 	}
+	public static BufferedImage getSprite(int yGrid) {
+
+        if (spriteSheet == null) {
+            spriteSheet = loadSprite();
+        }
+        return spriteSheet.getSubimage(0, yGrid*TILE_SIZE+2, 45, TILE_SIZE);
+    }
    
 }

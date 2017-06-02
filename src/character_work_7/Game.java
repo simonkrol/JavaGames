@@ -23,7 +23,7 @@ public class Game extends JPanel {
 	static Character character;
 	private static JPanel mainPanel;
 	private static Direction direction=new Direction();
-	public int facing=0;
+	public int facing=5;
 	
 	public Game(){
 		map =new MapGen();
@@ -63,13 +63,13 @@ public class Game extends JPanel {
        	{
        		movement_index++;
        		character.xLoc+=movementR;//Move
-       		facing=0;
+       		facing=5;
        	}
         else if(direction.left && !direction.right)
         {
         	movement_index++;
         	character.xLoc-=movementL;
-        	facing=5;
+        	facing=0;
         }
         else
         {
@@ -77,7 +77,7 @@ public class Game extends JPanel {
         }
         
         character.setY(direction.jump);//Deal with the y axis
-        g2d.drawImage(character.sprites[(int)((movement_index%32+7)/8)+facing], (int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize), (int)(character.ySize*ySize), this);
+        g2d.drawImage(Character.getSprite((int)((movement_index%32+7)/8)+facing),(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize), (int)(character.ySize*ySize), this);
         //Redraw the character in their new position
      
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
