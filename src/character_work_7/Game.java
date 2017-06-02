@@ -34,6 +34,7 @@ public class Game extends JPanel {
     static int pixDist;
     static double movementL, movementR;
     int movement_index=0;
+    
     static int last=0;
     
     
@@ -50,7 +51,12 @@ public class Game extends JPanel {
         
         character.checkYCollision(map,(int)(character.xLoc*map.blocksWide));
         movementL=(xSize*time*character.speedMod/xSize)/(map.blocksWide/4);
+        if(!character.onGround)
+        {
+        	
+        }
         movementR=movementL;
+       
         
         if(character.xLoc<=0)movementL=0;//Make sure the character is within the boundaries
         if(character.xLoc+character.xSize>=1)movementR=0;
@@ -60,14 +66,14 @@ public class Game extends JPanel {
         	case"left":movementL=0;break;
         	case"right":movementR=0;break;
         }
-       	if(direction.right && !direction.left &&character.onGround)
+       	if(direction.right && !direction.left&&character.onGround)
        	{
        		last=1;
        		movement_index++;
        		character.xLoc+=movementR;//Move
        		facing=5;
        	}
-        else if(direction.left && !direction.right &&character.onGround)
+        else if(direction.left && !direction.right&&character.onGround)
         {
         	last=2;
         	movement_index++;
@@ -76,14 +82,26 @@ public class Game extends JPanel {
         }
         else if(!character.onGround)
         {
-        	if(last==1)character.xLoc+=movementR;//Move
-        	else if(last==2)character.xLoc-=movementL;//Move
+        	if(last==1)
+        	{
+        		if(direction.right)character.xLoc+=movementR*0.4;
+        		if(direction.left)character.xLoc-=movementL*0.6;
+        		character.xLoc+=movementR;
+        	}
+        	else if(last==2)
+        	{
+        		if(direction.left)character.xLoc-=movementL*0.4;
+        		if(direction.right)character.xLoc+=movementR*0.6;
+        		character.xLoc-=movementL;
+        	}
         	movement_index=0;
         }
         else
         {
+        	//leftShift=5;
+        	//rightShift=5;
         	last=0;
-        	//movement_index=0;
+        	movement_index=0;
         }
         
         character.setY(direction.jump);//Deal with the y axis
