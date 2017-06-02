@@ -11,49 +11,52 @@ import character_work_7.Game.Direction;
 
 public class Character {
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Used to gather images 
-	final static int TILE_SIZE=69;
-	static BufferedImage spriteSheet=loadSprite();
+	public Direction direction=new Direction();
+	BufferedImage spriteSheet;
 	static int[][] spriteValues={{63,9,0,46,69,1,1},{40,99,80,40,69,4,5},{99,179,64,46,79,2,7}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
 	double xSize,ySize,yVel=0,yAcc=-9.81,xVel=0, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
 	boolean jumped=false;
 	boolean justjumped=false;
-	public Character(double x,double y,double xS, double yS, double t)
+	int spriteIndex=0;
+	int animationIndex=0;
+	boolean repeat=true;
+	boolean right=true;
+	public Character(double x,double y,double xS, double yS, double t, String colour)
 	{
 		xLoc=x;		//x and y Loc are the location on the screen, x and y Size are the size of the character in each direction
 		yLoc=y;
 		xSize=xS;
 		ySize=yS;
-		String dest;
 		
-		
+		spriteSheet=loadSprite("Resources/Mage/"+colour+"Complete.png");
 		time=t;//Time is the time between frames
 	}
 	
-	public static BufferedImage loadSprite() {
+	public static BufferedImage loadSprite(String dest) {
 
         BufferedImage sprite = null;
 
         try {
-            sprite = ImageIO.read(new File("Resources/Mage/RedComplete.png"));
+            sprite = ImageIO.read(new File(dest));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return sprite;
     }
-	public boolean setY(MapGen map,boolean pressed, boolean Super)
+	public boolean setY(MapGen map)
 	{
 		justjumped=false;
 		int current = (int) (xLoc*map.blocksWide);
 		checkYCollision(map,current);
 		int multi=1;
-		if(Super)multi=2;
-		if(onGround && pressed)		//Only jump if on the ground and holding up
+		if(direction.superJump)multi=2;
+		if(onGround && direction.jump)		//Only jump if on the ground and holding up
 		{
 			justjumped=true;
 			yVel=8.322*multi;
-			yAcc=-28.01*multi;
+			yAcc=-28.01;//*multi;
 			onGround=false;
 			jumped=true;
 		}
@@ -66,7 +69,7 @@ public class Character {
 		return false;
 		
 	}
-	public boolean setX(MapGen map, Direction direction)
+	public boolean setX(MapGen map)
 	{
 		int current = (int) (xLoc*map.blocksWide);
 		String collision=checkXCollision(map,current);
@@ -149,16 +152,9 @@ public class Character {
 		}
 		return "null";
 	}
-	public static BufferedImage getSprite(int xGrid,int yGrid) {
-		if(yGrid>7)yGrid=7;
-        if (spriteSheet == null) {
-            spriteSheet = loadSprite();
-        }
-        return spriteSheet.getSubimage(37+xGrid*252, 94*yGrid, 46, TILE_SIZE);
-    }
-	public static BufferedImage getAnimationSprite(int animationNumber, int spriteIndex, boolean repeat, boolean right)
+	public BufferedImage getAnimationSprite()
 	{
-		int temp[]=spriteValues[animationNumber];
+		int temp[]=spriteValues[animationIndex];
 		spriteIndex/=temp[6];
 		if(!repeat&&spriteIndex>temp[5])spriteIndex=temp[5]-1;
 		else spriteIndex=spriteIndex%temp[5];

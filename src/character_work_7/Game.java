@@ -20,11 +20,12 @@ import javax.swing.KeyStroke;
 public class Game extends JPanel {
 	final static double time=0.030;//The time between cycles, 1.0/time gives an average fps
 	MapGen map;
-	//List<Character> character_entities=new ArrayList<Character>();
-	static Character character;
+	static List<Character> character_entities=new ArrayList<Character>();
+	int currMain=0;
+	static Character mainChar;
+	static Character tempChar;
 	private static JPanel mainPanel;
-	private static Direction direction=new Direction();
-	public int facing=1;
+	
 	
 	public Game(){
 		map =new MapGen();
@@ -33,10 +34,7 @@ public class Game extends JPanel {
     static int ySize;
     static Game game;
     BufferedImage sprite;
-    int spriteIndex=0;
-    int animationIndex=0;
-    boolean repeat=true;
-    boolean right=true;
+   
     
     
     
@@ -45,47 +43,52 @@ public class Game extends JPanel {
         
         xSize=getWidth();
         ySize=getHeight();
-        
+        mainChar=character_entities.get(currMain);
         Graphics2D g2d = (Graphics2D) g;
         map.draw(g2d,xSize, ySize, this);//Draws the clouds and grass/dirt
-        boolean changeY=character.setY(map, direction.jump, direction.superJump);//Deal with the y axis
-        boolean changeX=character.setX(map, direction);
-        if(changeX &&direction.right)right=true;
-        else if(changeX)right=false;
+    	boolean changeY;
+        boolean changeX;
+        for(Character temp:character_entities)
+        {
+        	changeY=temp.setY(map);//Deal with the y axis
+            changeX=temp.setX(map);
+            if(changeX && temp.direction.right)temp.right=true;
+            else if(changeX)temp.right=false;
+        	if(changeY&& temp.jumped)
+        	{
+        		if(temp.justjumped)
+        		{
+	        		temp.animationIndex=0;
+	        		temp.spriteIndex=0;
+	        	}
+	        	else if(temp.animationIndex!=2)
+	        	{
+	        		temp.spriteIndex=0;
+	        		temp.animationIndex=2;
+	        		temp.repeat=false;
+	        	}
+        		temp.spriteIndex++;
+	        }
+	        else if(changeX)
+	        {
+	        	if(temp.animationIndex!=1)
+	        	{
+	        		temp.spriteIndex=0;
+	        		temp.animationIndex=1;
+	        		temp.repeat=true;
+	        	}
+	        	temp.spriteIndex++;
+	        }
+	        else
+	        {
+	        	temp.animationIndex=0;
+	        	temp.spriteIndex=0;
+	        }
+        	sprite=temp.getAnimationSprite();
+        	g2d.drawImage(sprite,(int)(temp.xLoc*xSize), (int)(temp.yLoc*ySize),(int)(temp.xSize*xSize*1.3), (int)(temp.ySize*ySize), this);
+        }
         
-        if(changeY&& character.jumped)
-        {
-        	if(character.justjumped)
-        	{
-        		animationIndex=0;
-        		spriteIndex=0;
-        	}
-        	else if(animationIndex!=2)
-        	{
-        		spriteIndex=0;
-        		animationIndex=2;
-        		repeat=false;
-        	}
-        	spriteIndex++;
-        }
-        else if(changeX)
-        {
-        	if(animationIndex!=1)
-        	{
-        		spriteIndex=0;
-        		animationIndex=1;
-        		repeat=true;
-        	}
-        	spriteIndex++;
-        }
-        else
-        {
-        	animationIndex=0;
-        	spriteIndex=0;
-        }
-        sprite=Character.getAnimationSprite(animationIndex, spriteIndex, repeat, right);
-        g2d.drawImage(sprite,(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
-        //Redraw the character in their new position
+       
      
         //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
            // RenderingHints.VALUE_ANTIALIAS_ON);
@@ -97,7 +100,10 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        character = new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide, time);
+        mainChar=new Character(0.3,0.15,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, "Blue");
+        character_entities.add(mainChar);
+        mainChar=new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide, time,"Orange");
+        character_entities.add(mainChar);
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setVisible(true);
@@ -148,14 +154,14 @@ public class Game extends JPanel {
         {
         	switch(action)
         	{
-        		case"jump":direction.jump=true;break;
-        		case"jumpR":direction.jump=false;break;
-        		case"right":direction.right=true;break;
-        		case"rightR":direction.right=false;break;
-        		case"left":direction.left=true;break;
-        		case"leftR":direction.left=false;break;
-        		case"space":direction.superJump=true;break;
-        		case"spaceR":direction.superJump=false;break;
+        		case"jump":mainChar.direction.jump=true;break;
+        		case"jumpR":mainChar.direction.jump=false;break;
+        		case"right":mainChar.direction.right=true;break;
+        		case"rightR":mainChar.direction.right=false;break;
+        		case"left":mainChar.direction.left=true;break;
+        		case"leftR":mainChar.direction.left=false;break;
+        		case"space":mainChar.direction.superJump=true;break;
+        		case"spaceR":mainChar.direction.superJump=false;break;
         	}
             
         } // end method actionPerformed()
