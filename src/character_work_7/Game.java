@@ -23,7 +23,7 @@ public class Game extends JPanel {
 	static Character character;
 	private static JPanel mainPanel;
 	private static Direction direction=new Direction();
-	public int facing=5;
+	public int facing=1;
 	
 	public Game(){
 		map =new MapGen();
@@ -51,10 +51,7 @@ public class Game extends JPanel {
         
         character.checkYCollision(map,(int)(character.xLoc*map.blocksWide));
         movementL=(xSize*time*character.speedMod/xSize)/(map.blocksWide/4);
-        if(!character.onGround)
-        {
-        	
-        }
+        
         movementR=movementL;
        
         
@@ -71,7 +68,7 @@ public class Game extends JPanel {
        		last=1;
        		movement_index++;
        		character.xLoc+=movementR;//Move
-       		facing=5;
+       		facing=1;
        	}
         else if(direction.left && !direction.right&&character.onGround)
         {
@@ -84,28 +81,27 @@ public class Game extends JPanel {
         {
         	if(last==1)
         	{
-        		if(direction.right)character.xLoc+=movementR*0.4;
-        		if(direction.left)character.xLoc-=movementL*0.6;
+        		if(direction.right)character.xLoc+=movementR*0.17;
+        		if(direction.left)character.xLoc-=movementR*0.5;
         		character.xLoc+=movementR;
         	}
         	else if(last==2)
         	{
-        		if(direction.left)character.xLoc-=movementL*0.4;
-        		if(direction.right)character.xLoc+=movementR*0.6;
+        		if(direction.left)character.xLoc-=movementL*0.17;
+        		if(direction.right)character.xLoc+=movementL*0.5;
         		character.xLoc-=movementL;
         	}
         	movement_index=0;
         }
         else
         {
-        	//leftShift=5;
-        	//rightShift=5;
         	last=0;
         	movement_index=0;
         }
         
         character.setY(direction.jump);//Deal with the y axis
-        g2d.drawImage(Character.getSprite((int)((movement_index%32+7)/8)+facing),(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
+        
+        g2d.drawImage(Character.getSprite(facing,(movement_index%32+7)/8),(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
         //Redraw the character in their new position
      
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
@@ -148,6 +144,11 @@ public class Game extends JPanel {
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released LEFT"), "leftR");
 		mainPanel.getActionMap().put("left", new Action("left"));
 		mainPanel.getActionMap().put("leftR", new Action("leftR"));
+		
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "space");
+		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released SPACE"), "spaceR");
+		mainPanel.getActionMap().put("left", new Action("space"));
+		mainPanel.getActionMap().put("leftR", new Action("spaceR"));
 		return mainPanel;
 		
 	}
@@ -170,6 +171,7 @@ public class Game extends JPanel {
         		case"rightR":direction.right=false;break;
         		case"left":direction.left=true;break;
         		case"leftR":direction.left=false;break;
+        		case"space":
         	}
             
         } // end method actionPerformed()
@@ -184,11 +186,13 @@ public class Game extends JPanel {
 		boolean right;
 		boolean left;
 		boolean jump;
+		boolean superJump;
 		public Direction()
 		{
 			right=false;
 			left=false;
 			jump=false;
+			superJump=false;
 		}
 			
 	}

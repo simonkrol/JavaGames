@@ -46,7 +46,7 @@ public class Character {
         BufferedImage sprite = null;
 
         try {
-            sprite = ImageIO.read(new File("Resources/Mage/RedWalking.png"));
+            sprite = ImageIO.read(new File("Resources/Mage/RedWalkJump.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,12 +135,12 @@ public class Character {
 		}
 		return "null";
 	}
-	public static BufferedImage getSprite(int yGrid) {
+	public static BufferedImage getSprite(int xGrid,int yGrid) {
 
         if (spriteSheet == null) {
             spriteSheet = loadSprite();
         }
-        return spriteSheet.getSubimage(0, yGrid*TILE_SIZE+2, 45, TILE_SIZE);
+        return spriteSheet.getSubimage(37+xGrid*252, 94*yGrid, 46, TILE_SIZE);
     }
    
 }
