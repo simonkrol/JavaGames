@@ -34,7 +34,7 @@ public class Game extends JPanel {
     static int pixDist;
     static double movementL, movementR;
     int movement_index=0;
-    static boolean last=true;
+    static int last=0;
     
     
     
@@ -62,32 +62,27 @@ public class Game extends JPanel {
         }
        	if(direction.right && !direction.left &&character.onGround)
        	{
-       		last=true;
+       		last=1;
        		movement_index++;
        		character.xLoc+=movementR;//Move
        		facing=5;
        	}
         else if(direction.left && !direction.right &&character.onGround)
         {
-        	last=false;
+        	last=2;
         	movement_index++;
         	character.xLoc-=movementL;
         	facing=0;
         }
-        else if(!character.onGround&&movement_index!=0)
+        else if(!character.onGround)
         {
-        	if(last)
-        	{
-        		character.xLoc+=movementR;//Move
-        	}
-        	else
-        	{
-        		character.xLoc-=movementL;//Move
-        	}
+        	if(last==1)character.xLoc+=movementR;//Move
+        	else if(last==2)character.xLoc-=movementL;//Move
         	movement_index=0;
         }
         else
         {
+        	last=0;
         	//movement_index=0;
         }
         
