@@ -32,99 +32,63 @@ public class Game extends JPanel {
     static int xSize;
     static int ySize;
     static Game game;
-    static int pixDist;
-    static double movementL, movementR;
-    int movement_index=0;
-    int super_index=0;
     BufferedImage sprite;
-    
-    static int last=0;
+    int spriteIndex=0;
+    int animationIndex=0;
+    boolean repeat=true;
+    boolean right=true;
     
     
     
     public void paint(Graphics g) {
         super.paint(g);
         
-        xSize=getWidth();//Resize the given image
+        xSize=getWidth();
         ySize=getHeight();
         
         Graphics2D g2d = (Graphics2D) g;
-        map.draw(g2d,xSize, ySize, this);
-        //g2d.drawImage(game.currBack.background, 0, 0, xSize, ySize,this);
+        map.draw(g2d,xSize, ySize, this);//Draws the clouds and grass/dirt
+        boolean changeY=character.setY(map, direction.jump, direction.superJump);//Deal with the y axis
+        boolean changeX=character.setX(map, direction);
+        if(changeX &&direction.right)right=true;
+        else if(changeX)right=false;
         
-        character.checkYCollision(map,(int)(character.xLoc*map.blocksWide));
-        movementL=(xSize*time*character.speedMod/xSize)/(map.blocksWide/4);
-        
-        movementR=movementL;
-
-        if(character.onGround)super_index=0;
-        if(character.xLoc<=0)movementL=0;//Make sure the character is within the boundaries
-        if(character.xLoc+character.xSize>=1)movementR=0;
-        
-        switch(character.checkXCollision(map, (int)(character.xLoc*map.blocksWide)))//Prevent movement in the direction of collision
+        if(changeY&& character.jumped)
         {
-        	case"left":movementL=0;break;
-        	case"right":movementR=0;break;
-        }
-       	if(direction.right && !direction.left&&character.onGround)
-       	{
-       		last=1;
-       		movement_index++;
-       		character.xLoc+=movementR;//Move
-       		facing=1;
-       	}
-        else if(direction.left && !direction.right&&character.onGround)
-        {
-        	last=2;
-        	movement_index++;
-        	character.xLoc-=movementL;
-        	facing=0;
-        }
-        else if(!character.onGround)
-        {
-        	
-        	if(super_index!=0 || (direction.superJump&&direction.jump))super_index++;
-        	if(character.jumped){
-	        	if(last==1)
-	        	{
-	        		if(direction.right)character.xLoc+=movementR*0.17;
-	        		if(direction.left)character.xLoc-=movementR*0.5;
-	        		character.xLoc+=movementR;
-	        	}
-	        	else if(last==2)
-	        	{
-	        		if(direction.left)character.xLoc-=movementL*0.17;
-	        		if(direction.right)character.xLoc+=movementL*0.5;
-	        		character.xLoc-=movementL;
-	        	}
-	        	else
-	        	{
-	        		if(direction.left)character.xLoc-=movementL*0.4;
-	        		if(direction.right)character.xLoc+=movementL*0.4;
-	        		
-	        	}
-	        	movement_index=0;
-        	}
-        	else
+        	if(character.justjumped)
         	{
-        		if(direction.right)character.xLoc+=movementR*0.7;
-        		if(direction.left)character.xLoc-=movementR*0.7;
+        		animationIndex=0;
+        		spriteIndex=0;
         	}
+        	else if(animationIndex!=2)
+        	{
+        		spriteIndex=0;
+        		animationIndex=2;
+        		repeat=false;
+        	}
+        	spriteIndex++;
+        }
+        else if(changeX)
+        {
+        	if(animationIndex!=1)
+        	{
+        		spriteIndex=0;
+        		animationIndex=1;
+        		repeat=true;
+        	}
+        	spriteIndex++;
         }
         else
         {
-        	last=0;
-        	movement_index=0;
+        	animationIndex=0;
+        	spriteIndex=0;
         }
-        
-        character.setY(direction.jump, direction.superJump);//Deal with the y axis
-        if(character.onGround||super_index==0)sprite=Character.getSprite(facing,(movement_index%32+7)/8);
-        else sprite=Character.getSprite(facing, super_index/5+5);
+        sprite=Character.getAnimationSprite(animationIndex, spriteIndex, repeat, right);
         g2d.drawImage(sprite,(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
         //Redraw the character in their new position
      
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
-            RenderingHints.VALUE_ANTIALIAS_ON);
+        //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
+           // RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
     

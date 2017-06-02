@@ -1,6 +1,5 @@
 package character_work_7;
 
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -8,13 +7,17 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import character_work_7.Game.Direction;
+
 public class Character {
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Used to gather images 
 	final static int TILE_SIZE=69;
 	static BufferedImage spriteSheet=loadSprite();
-	double xSize,ySize,yVel=0,yAcc=-9.81, time,speedMod=1, xLoc, yLoc; //Class variables
+	static int[][] spriteValues={{63,9,0,46,69,1,1},{40,99,80,40,69,4,5},{99,179,64,46,79,2,7}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
+	double xSize,ySize,yVel=0,yAcc=-9.81,xVel=0, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
 	boolean jumped=false;
+	boolean justjumped=false;
 	public Character(double x,double y,double xS, double yS, double t)
 	{
 		xLoc=x;		//x and y Loc are the location on the screen, x and y Size are the size of the character in each direction
@@ -22,23 +25,8 @@ public class Character {
 		xSize=xS;
 		ySize=yS;
 		String dest;
-		/*for(int i=0; i<10;i++)
-		{
-			dest="Resources/Mage/Walk"+(Integer.toString(i))+".png";
-			System.out.println(dest);
-			sprites[i]=kit.getImage(dest);
-		}*/
-		/*sprites[0]=kit.getImage("Resources/Mage/Walk0.png");
-		sprites[1]=kit.getImage("Resources/Mage/Walk1.png");
-		sprites[2]=kit.getImage("Resources/Mage/Walk2.png");
-		sprites[3]=kit.getImage("Resources/Mage/Walk3.png");
-		sprites[4]=kit.getImage("Resources/Mage/Walk4.png");
-		sprites[5]=kit.getImage("Resources/Mage/Walk5.png");
-		sprites[6]=kit.getImage("Resources/Mage/Walk6.png");
-		sprites[7]=kit.getImage("Resources/Mage/Walk7.png");
-		sprites[8]=kit.getImage("Resources/Mage/Walk8.png");
-		sprites[9]=kit.getImage("Resources/Mage/Walk9.png");*/
-
+		
+		
 		time=t;//Time is the time between frames
 	}
 	
@@ -47,19 +35,23 @@ public class Character {
         BufferedImage sprite = null;
 
         try {
-            sprite = ImageIO.read(new File("Resources/Mage/BlueWalkJump.png"));
+            sprite = ImageIO.read(new File("Resources/Mage/RedComplete.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return sprite;
     }
-	public void setY(boolean pressed, boolean Super)
+	public boolean setY(MapGen map,boolean pressed, boolean Super)
 	{
+		justjumped=false;
+		int current = (int) (xLoc*map.blocksWide);
+		checkYCollision(map,current);
 		int multi=1;
 		if(Super)multi=2;
 		if(onGround && pressed)		//Only jump if on the ground and holding up
 		{
+			justjumped=true;
 			yVel=8.322*multi;
 			yAcc=-28.01*multi;
 			onGround=false;
@@ -69,8 +61,25 @@ public class Character {
 		{
 			yLoc-=(yVel*time*ySize/2);//Convert from m/s to pixels per 0.015 seconds
 			yVel+=yAcc*time;//Reduce current velocity
+			return true;
 		}
+		return false;
 		
+	}
+	public boolean setX(MapGen map, Direction direction)
+	{
+		int current = (int) (xLoc*map.blocksWide);
+		String collision=checkXCollision(map,current);
+		xVel=(time*speedMod)/(map.blocksWide/4);
+		switch(collision)
+		{
+			case "right":if(direction.right)xVel=0;break;
+			case "left":if(direction.left)xVel=0;break;
+		}
+		if(direction.left && !direction.right)xLoc-=xVel;
+		else if(direction.right && !direction.left)xLoc+=xVel;
+		else return false;
+		return true;
 	}
 	public void setGround(){	//Move character to the ground
 		jumped=false;
@@ -147,5 +156,14 @@ public class Character {
         }
         return spriteSheet.getSubimage(37+xGrid*252, 94*yGrid, 46, TILE_SIZE);
     }
+	public static BufferedImage getAnimationSprite(int animationNumber, int spriteIndex, boolean repeat, boolean right)
+	{
+		int temp[]=spriteValues[animationNumber];
+		spriteIndex/=temp[6];
+		if(!repeat&&spriteIndex>temp[5])spriteIndex=temp[5]-1;
+		else spriteIndex=spriteIndex%temp[5];
+		if(right)return spriteSheet.getSubimage(temp[0]+temp[2]*spriteIndex, temp[1], temp[3], temp[4]);
+		else return spriteSheet.getSubimage(1147-temp[0]-temp[3]-temp[2]*spriteIndex, temp[1]+622, temp[3], temp[4]);
+	}
    
 }
