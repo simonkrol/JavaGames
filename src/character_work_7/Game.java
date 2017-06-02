@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class Game extends JPanel {
     static int pixDist;
     static double movementL, movementR;
     int movement_index=0;
+    int super_index=0;
+    BufferedImage sprite;
     
     static int last=0;
     
@@ -53,8 +56,8 @@ public class Game extends JPanel {
         movementL=(xSize*time*character.speedMod/xSize)/(map.blocksWide/4);
         
         movementR=movementL;
-       
-        
+
+        if(character.onGround)super_index=0;
         if(character.xLoc<=0)movementL=0;//Make sure the character is within the boundaries
         if(character.xLoc+character.xSize>=1)movementR=0;
         
@@ -79,19 +82,34 @@ public class Game extends JPanel {
         }
         else if(!character.onGround)
         {
-        	if(last==1)
-        	{
-        		if(direction.right)character.xLoc+=movementR*0.17;
-        		if(direction.left)character.xLoc-=movementR*0.5;
-        		character.xLoc+=movementR;
+        	
+        	if(super_index!=0 || (direction.superJump&&direction.jump))super_index++;
+        	if(character.jumped){
+	        	if(last==1)
+	        	{
+	        		if(direction.right)character.xLoc+=movementR*0.17;
+	        		if(direction.left)character.xLoc-=movementR*0.5;
+	        		character.xLoc+=movementR;
+	        	}
+	        	else if(last==2)
+	        	{
+	        		if(direction.left)character.xLoc-=movementL*0.17;
+	        		if(direction.right)character.xLoc+=movementL*0.5;
+	        		character.xLoc-=movementL;
+	        	}
+	        	else
+	        	{
+	        		if(direction.left)character.xLoc-=movementL*0.4;
+	        		if(direction.right)character.xLoc+=movementL*0.4;
+	        		
+	        	}
+	        	movement_index=0;
         	}
-        	else if(last==2)
+        	else
         	{
-        		if(direction.left)character.xLoc-=movementL*0.17;
-        		if(direction.right)character.xLoc+=movementL*0.5;
-        		character.xLoc-=movementL;
+        		if(direction.right)character.xLoc+=movementR*0.7;
+        		if(direction.left)character.xLoc-=movementR*0.7;
         	}
-        	movement_index=0;
         }
         else
         {
@@ -99,9 +117,10 @@ public class Game extends JPanel {
         	movement_index=0;
         }
         
-        character.setY(direction.jump);//Deal with the y axis
-        
-        g2d.drawImage(Character.getSprite(facing,(movement_index%32+7)/8),(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
+        character.setY(direction.jump, direction.superJump);//Deal with the y axis
+        if(character.onGround||super_index==0)sprite=Character.getSprite(facing,(movement_index%32+7)/8);
+        else sprite=Character.getSprite(facing, super_index/5+5);
+        g2d.drawImage(sprite,(int)(character.xLoc*xSize), (int)(character.yLoc*ySize),(int)(character.xSize*xSize*1.3), (int)(character.ySize*ySize), this);
         //Redraw the character in their new position
      
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
@@ -147,8 +166,8 @@ public class Game extends JPanel {
 		
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "space");
 		mainPanel.getInputMap().put(KeyStroke.getKeyStroke("released SPACE"), "spaceR");
-		mainPanel.getActionMap().put("left", new Action("space"));
-		mainPanel.getActionMap().put("leftR", new Action("spaceR"));
+		mainPanel.getActionMap().put("space", new Action("space"));
+		mainPanel.getActionMap().put("spaceR", new Action("spaceR"));
 		return mainPanel;
 		
 	}
@@ -171,7 +190,8 @@ public class Game extends JPanel {
         		case"rightR":direction.right=false;break;
         		case"left":direction.left=true;break;
         		case"leftR":direction.left=false;break;
-        		case"space":
+        		case"space":direction.superJump=true;break;
+        		case"spaceR":direction.superJump=false;break;
         	}
             
         } // end method actionPerformed()

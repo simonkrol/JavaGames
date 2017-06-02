@@ -14,6 +14,7 @@ public class Character {
 	static BufferedImage spriteSheet=loadSprite();
 	double xSize,ySize,yVel=0,yAcc=-9.81, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
+	boolean jumped=false;
 	public Character(double x,double y,double xS, double yS, double t)
 	{
 		xLoc=x;		//x and y Loc are the location on the screen, x and y Size are the size of the character in each direction
@@ -46,20 +47,23 @@ public class Character {
         BufferedImage sprite = null;
 
         try {
-            sprite = ImageIO.read(new File("Resources/Mage/RedWalkJump.png"));
+            sprite = ImageIO.read(new File("Resources/Mage/BlueWalkJump.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return sprite;
     }
-	public void setY(boolean pressed)
+	public void setY(boolean pressed, boolean Super)
 	{
+		int multi=1;
+		if(Super)multi=2;
 		if(onGround && pressed)		//Only jump if on the ground and holding up
 		{
-			yVel=8.322;
-			yAcc=-28.01;
+			yVel=8.322*multi;
+			yAcc=-28.01*multi;
 			onGround=false;
+			jumped=true;
 		}
 		if(!onGround)	//Calculate actual changes in motion and position	
 		{
@@ -69,6 +73,7 @@ public class Character {
 		
 	}
 	public void setGround(){	//Move character to the ground
+		jumped=false;
 		onGround=true;
 		yVel=0;
 		//yAcc=0;
@@ -136,7 +141,7 @@ public class Character {
 		return "null";
 	}
 	public static BufferedImage getSprite(int xGrid,int yGrid) {
-
+		if(yGrid>7)yGrid=7;
         if (spriteSheet == null) {
             spriteSheet = loadSprite();
         }

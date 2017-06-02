@@ -39,8 +39,7 @@ public class MyGame
 
     public static void main( String[] args )
     {
-    	String dest="Resources/Mage/Walk"+(Integer.toString(5))+".png";
-    	System.out.println(dest);
+    	if(1<0)System.out.print(1);System.out.println(2);
     } // end method main()
     
 }
