@@ -42,7 +42,7 @@ public class Character {
 	 */
 	public void checkYCollision(MapGen map,int current)
 	{
-		if(current==0)current=1;
+		if(current<=1)current=1;
 		Platform temp;
 		boolean collide=false;
 		for(int i=-1; i<2;i++)
@@ -72,7 +72,7 @@ public class Character {
 	 */
 	public String checkXCollision(MapGen map, int current)
 	{
-		if(current==0)current=1;
+		if(current<=1)current=1;
 		Platform temp;
 		for(int i=-1; i<2;i++)
 		{
