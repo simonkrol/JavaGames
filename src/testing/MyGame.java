@@ -39,7 +39,7 @@ public class MyGame
 
     public static void main( String[] args )
     {
-    	if(1<0)System.out.print(1);System.out.println(2);
+    	if(true)if(false)System.out.print(1);
     } // end method main()
     
 }

@@ -46,12 +46,18 @@ public class Game extends JPanel {
         ySize=getHeight();
         Graphics2D g2d = (Graphics2D) g;
         map.draw(g2d,xSize, ySize, this);//Draws the clouds and grass/dirt
-    	boolean changeY;
-        boolean changeX;
         for(Character temp:character_entities)
         {
-        	
-        	g2d.drawImage(temp.Animate(map),(int)(temp.xLoc*xSize), (int)(temp.yLoc*ySize),(int)(temp.xSize*xSize*1.3), (int)(temp.ySize*ySize), this);
+        	int xVal=(int)(temp.xLoc*xSize);
+        	sprite=temp.Animate(map);
+        	if(!temp.right)
+        	{
+        		xVal-=temp.xSize*xSize*Character.spriteValues[temp.animationIndex][7]/Character.spriteValues[0][3];
+        	}
+        	int yVal=(int)(temp.yLoc*ySize+(Character.spriteValues[0][4]-Character.spriteValues[temp.animationIndex][4])/2);
+        	int width=(int)(temp.xSize*1.3*xSize*Character.spriteValues[temp.animationIndex][3]/Character.spriteValues[0][3]);
+        	int height=(int)(Character.spriteValues[temp.animationIndex][4]/Character.spriteValues[0][4]*temp.ySize*ySize);
+        	g2d.drawImage(temp.Animate(map),xVal,yVal,width,height, this);
         }
         
        
@@ -66,9 +72,9 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        secondaryChar=new Character(0.3,0.15,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, "Blue");
+        secondaryChar=new Character(0.3,0.15,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, "Blue", "superjump");
         character_entities.add(secondaryChar);
-        mainChar=new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide, time,"Orange");
+        mainChar=new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide, time,"Blue", "lightningbolt");
         character_entities.add(mainChar);
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
@@ -141,8 +147,8 @@ public class Game extends JPanel {
         		case"rightR":mainChar.direction.right=false;break;
         		case"left":mainChar.direction.left=true;break;
         		case"leftR":mainChar.direction.left=false;break;
-        		case"space":mainChar.direction.superJump=true;break;
-        		case"spaceR":mainChar.direction.superJump=false;break;
+        		case"space":mainChar.direction.ability=true;break;
+        		case"spaceR":mainChar.direction.ability=false;break;
         		
         		case"w":secondaryChar.direction.jump=true;break;
         		case"wR":secondaryChar.direction.jump=false;break;
@@ -165,13 +171,13 @@ public class Game extends JPanel {
 		boolean right;
 		boolean left;
 		boolean jump;
-		boolean superJump;
+		boolean ability;
 		public Direction()
 		{
 			right=false;
 			left=false;
 			jump=false;
-			superJump=false;
+			ability=false;
 		}
 			
 	}

@@ -13,7 +13,7 @@ public class Character {
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Used to gather images 
 	public Direction direction=new Direction();
 	BufferedImage spriteSheet;
-	static int[][] spriteValues={{63,9,0,46,69,1,1},{40,99,80,40,69,4,5},{99,179,64,46,79,2,7}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
+	static int[][] spriteValues={{63,9,0,46,69,1,1,0},{40,99,80,40,69,4,5,0},{99,179,64,46,79,2,7,0},{615,189,65,46,166,4,5,0},{494,90,135,127,69,4,5,85}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
 	double xSize,ySize,yVel=0,yAcc=-9.81,xVel=0, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
 	boolean jumped=false;
@@ -22,13 +22,15 @@ public class Character {
 	int animationIndex=0;
 	boolean repeat=true;
 	boolean right=true;
-	public Character(double x,double y,double xS, double yS, double t, String colour)
+	boolean abilAn=false;
+	Ability ability;
+	public Character(double x,double y,double xS, double yS, double t, String colour, String power)
 	{
 		xLoc=x;		//x and y Loc are the location on the screen, x and y Size are the size of the character in each direction
 		yLoc=y;
 		xSize=xS;
 		ySize=yS;
-		
+		ability=new Ability(30,power);
 		spriteSheet=loadSprite("Resources/Mage/"+colour+"Complete.png");
 		time=t;//Time is the time between frames
 	}
@@ -45,21 +47,24 @@ public class Character {
 
         return sprite;
     }
+	public void jump(double multi)
+	{
+		if(onGround)
+		{
+			justjumped=true;
+			yVel=8.322*multi;
+			yAcc=-28.01;
+			onGround=false;
+			jumped=true;
+		}
+
+	}
 	public boolean setY(MapGen map)
 	{
 		justjumped=false;
 		int current = (int) (xLoc*map.blocksWide);
 		checkYCollision(map,current);
-		int multi=1;
-		if(direction.superJump)multi=2;
-		if(onGround && direction.jump)		//Only jump if on the ground and holding up
-		{
-			justjumped=true;
-			yVel=8.322*multi;
-			yAcc=-28.01;//*multi;
-			onGround=false;
-			jumped=true;
-		}
+		if(direction.jump)jump(1);
 		if(!onGround)	//Calculate actual changes in motion and position	
 		{
 			yLoc-=(yVel*time*ySize/2);//Convert from m/s to pixels per 0.015 seconds
@@ -74,6 +79,11 @@ public class Character {
 		int current = (int) (xLoc*map.blocksWide);
 		String collision=checkXCollision(map,current);
 		xVel=(time*speedMod)/(map.blocksWide/4);
+		if(xLoc<0)
+		{
+			if(direction.left)xVel=0;
+		}
+		else if(xLoc+xSize>1)if(direction.right)xVel=0;
 		switch(collision)
 		{
 			case "right":if(direction.right)xVel=0;break;
@@ -97,6 +107,7 @@ public class Character {
 	public void checkYCollision(MapGen map,int current)
 	{
 		if(current<=1)current=1;
+		else if(current>=map.blocksWide)current=map.blocksWide-2;
 		Platform temp;
 		boolean collide=false;
 		for(int i=-1; i<2;i++)
@@ -107,8 +118,11 @@ public class Character {
 				if(yLoc+ySize>=temp.yPos)
 				{
 					if(yLoc+ySize-temp.yPos>0.1/map.blocksTall && yLoc+ySize-temp.yPos<0.8/map.blocksTall)yLoc-=0.005;
-					if(yVel<0)yVel=0;
-					setGround();
+					if(yVel<0)
+					{
+						yVel=0;
+						setGround();
+					}
 					collide=true;
 				}
 			}
@@ -127,6 +141,7 @@ public class Character {
 	public String checkXCollision(MapGen map, int current)
 	{
 		if(current<=1)current=1;
+		else if(current>=map.blocksWide)current=map.blocksWide-2;
 		Platform temp;
 		for(int i=-1; i<2;i++)
 		{
@@ -158,19 +173,38 @@ public class Character {
 		int tempIndex=spriteIndex/temp[6];
 		if(!repeat&&tempIndex>temp[5])spriteIndex=temp[5]-1;
 		else tempIndex=tempIndex%temp[5];
-		if(tempIndex>0)System.out.println(tempIndex);
+		//tempIndex=3;
 		if(right)return spriteSheet.getSubimage(temp[0]+temp[2]*tempIndex, temp[1], temp[3], temp[4]);
 		else return spriteSheet.getSubimage(1147-temp[0]-temp[3]-temp[2]*tempIndex, temp[1]+622, temp[3], temp[4]);
 	}
 	
 	public BufferedImage Animate(MapGen map)
 	{
-		boolean changeY=setY(map);//Deal with the y axis
+		if(direction.ability)abilities();
+		
+		boolean changeY=setY(map);
         boolean changeX=setX(map);
-        
         if(changeX && direction.right)right=true;
         else if(changeX)right=false;
-    	if(changeY&& jumped)
+        if((direction.ability&&ability.active) || abilAn)
+        {
+        	if(!abilAn)
+        	{
+        		animationIndex=ability.animationIndex;
+        		spriteIndex=0;
+        		abilAn=true;
+        	}
+        	else
+        	{
+        		spriteIndex++;
+        	}
+        	if(spriteIndex>spriteValues[animationIndex][5]*spriteValues[animationIndex][6])
+        	{
+        		abilAn=false;
+        		ability.active=false;
+        	}
+        }
+        else if(changeY&& jumped)
     	{
     		if(justjumped)
     		{
@@ -201,6 +235,17 @@ public class Character {
         	spriteIndex=0;
         }
     	return getAnimationSprite();
+	}
+	public void abilities()
+	{
+		if(direction.ability)
+		{
+			switch(ability.name)
+			{
+				case"superjump":if(onGround)ability.active=true;jump(2.0);break;
+				case"lightningbolt":ability.active=true;break;
+			}
+		}
 	}
    
 }
