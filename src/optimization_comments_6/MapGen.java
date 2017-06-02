@@ -12,9 +12,11 @@ public class MapGen
 {
 
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Class variables
-	Image clouds, dirt, grass; 
+	Image clouds, dirt;
+	Image[] grass=new Image[3]; 
 	int blocksWide, blocksTall;
 	int[] grassy;//Used to indicate at what y value the grass is at each x 
+	int[] grassT;//Determine which grass sprite
 	List<Platform> platforms; //Arraylist of all grass blocks to allow for collision checking
 	
 	
@@ -23,9 +25,12 @@ public class MapGen
 		blocksWide= ThreadLocalRandom.current().nextInt(32, 64 + 1);
 		clouds=kit.getImage("Resources/SkyBackground.jpg");
 		dirt=kit.getImage("Resources/Dirt.png");
-		grass=kit.getImage("Resources/Grass.png");
+		grass[0]=kit.getImage("Resources/Grass.png");
+		grass[1]=kit.getImage("Resources/Grass1.png");
+		grass[2]=kit.getImage("Resources/Grass2.png");
 		platforms=new ArrayList<Platform>();
 		grassy=new int[blocksWide];
+		grassT=new int[blocksWide];
 		generateTerrain();
 		
 		
@@ -52,9 +57,11 @@ public class MapGen
 				starting+=rand;
 			}
 			grassy[i]=starting;
+			grassT[i]=ThreadLocalRandom.current().nextInt(0,3);
 			//Generate a platform to allow for collision detection
 			platforms.add(new Platform((double)i/blocksWide,(double)starting/blocksTall,1.0/blocksWide,1.0/blocksWide));
 		}
+		platforms.add(new Platform(0.0,0.0,0.0,0.0));
 	}
 	/*
 	 * Draws all the components of the terrain on the canvas
@@ -67,7 +74,7 @@ public class MapGen
 		for(int i=0;i<blocksWide;i++)
 		{
 			grassY=grassy[i];
-			g2d.drawImage(grass, i*xSize/blocksWide,grassY*ySize/blocksTall, size+2, size, newThis);
+			g2d.drawImage(grass[grassT[i]], i*xSize/blocksWide,grassY*ySize/blocksTall, size+2, size, newThis);
 			//Draw the grass and fill in all the dirt blocks below it, then break and move to the next block
 			g2d.drawImage(dirt, i*xSize/blocksWide,(grassY+1)*ySize/blocksTall, size+2, 20*size, newThis);
 			
