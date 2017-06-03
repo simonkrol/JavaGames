@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -48,16 +49,7 @@ public class Game extends JPanel {
         map.draw(g2d,xSize, ySize, this);//Draws the clouds and grass/dirt
         for(Character temp:character_entities)
         {
-        	int xVal=(int)(temp.xLoc*xSize);
-        	sprite=temp.Animate(map);
-        	if(!temp.right)
-        	{
-        		xVal-=temp.xSize*xSize*Character.spriteValues[temp.animationIndex][7]/Character.spriteValues[0][3];
-        	}
-        	int yVal=(int)(temp.yLoc*ySize+(Character.spriteValues[0][4]-Character.spriteValues[temp.animationIndex][4])/2);
-        	int width=(int)(temp.xSize*1.3*xSize*Character.spriteValues[temp.animationIndex][3]/Character.spriteValues[0][3]);
-        	int height=(int)(Character.spriteValues[temp.animationIndex][4]/Character.spriteValues[0][4]*temp.ySize*ySize);
-        	g2d.drawImage(temp.Animate(map),xVal,yVal,width,height, this);
+        	temp.draw(g2d,xSize,ySize,map, this);
         }
         
        
@@ -67,15 +59,18 @@ public class Game extends JPanel {
     }
 
     
-
+    public static Character addChar(String colour, String ability)
+    {
+    	tempChar=new Character(ThreadLocalRandom.current().nextInt(0, 11)/10.0, 0.3,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, colour, ability);
+    	character_entities.add(tempChar);
+    	return tempChar;
+    }
 	public static void main(String[] args) throws InterruptedException {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        secondaryChar=new Character(0.3,0.15,0.7/game.map.blocksWide,2.8/game.map.blocksWide, time, "Blue", "superjump");
-        character_entities.add(secondaryChar);
-        mainChar=new Character(0,0.15,0.7/game.map.blocksWide, 2.8/game.map.blocksWide, time,"Blue", "lightningbolt");
-        character_entities.add(mainChar);
+        mainChar=addChar("Aqua", "superjump");
+        secondaryChar=addChar("Pink", "lightningbolt");
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setVisible(true);
@@ -154,7 +149,6 @@ public class Game extends JPanel {
 		}
         public void actionPerformed( ActionEvent tf )
         {
-        	System.out.println(action);
         	switch(action)
         	{
         		case"jump":mainChar.direction.jump=true;break;
@@ -177,30 +171,11 @@ public class Game extends JPanel {
         		case"s":secondaryChar.direction.ability=true;break;
         		case"sR":secondaryChar.direction.ability=false;break;
         		
-        		case"shiftR":tempChar=mainChar;mainChar=secondaryChar;secondaryChar=tempChar;break;
+        		case"shiftR":tempChar=mainChar;mainChar=secondaryChar;secondaryChar=tempChar;mainChar.direction.reset();secondaryChar.direction.reset();break;
         		
         	}
             
         } // end method actionPerformed()
         
     } // end class EnterAction
-	
-	/*
-	 * Direction class, used to determine which way to move the character
-	 */
-	static class Direction
-	{
-		boolean right;
-		boolean left;
-		boolean jump;
-		boolean ability;
-		public Direction()
-		{
-			right=false;
-			left=false;
-			jump=false;
-			ability=false;
-		}
-			
-	}
 }

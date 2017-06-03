@@ -22,7 +22,7 @@ public class MapGen
 	
 	public MapGen()//Collect images, create Platform list, create grassy array and generate a random integer as the map wideness
 	{
-		blocksWide= ThreadLocalRandom.current().nextInt(32, 64 + 1);
+		blocksWide= ThreadLocalRandom.current().nextInt(16, 24 + 1);
 		clouds=kit.getImage("Resources/SkyBackground.jpg");
 		dirt=kit.getImage("Resources/Dirt.png");
 		grass[0]=kit.getImage("Resources/Grass.png");

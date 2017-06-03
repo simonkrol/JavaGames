@@ -1,23 +1,37 @@
 package character_work_7;
 
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import character_work_7.Game.Direction;
+
 
 public class Character {
 	Toolkit kit = Toolkit.getDefaultToolkit(); //Used to gather images 
 	public Direction direction=new Direction();
 	BufferedImage spriteSheet;
-	static int[][] spriteValues={{63,9,0,46,69,1,1,0},{40,99,80,40,69,4,11,0},{99,179,64,46,79,2,14,0},{615,189,65,46,166,4,11,0},{494,90,135,127,69,4,11,85}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
+	/*
+	 * Store the left most point of feet(x and y) of the first sprite
+	 * Store left and right distance
+	 * Store up and down distance
+	 * Store x distance to left most point of feet of next sprite
+	 */
+	static Sprite base;
+	List<Sprite> sprites=new ArrayList<Sprite>();
+	static int[][] spriteVals={{80,9,17,30,76,1,10,69},{58,99,17,22,80,4,10}};
+	//Distance to middle in X, distance in y, left side width, right side width, distance to new sprite, number of sprites, lapses per change, height
+	static int[][] spriteValues={{63,9,0,46,69,1,1,0},{40,99,80,40,69,4,11,0},{99,179,64,46,79,2,14,0},{615,189,65,46,166,4,9,0},{494,90,135,127,69,4,11,85}};//For each animation(the first number), store the initial x jump, the y jump, the x between each sprite, the x size and the y size
 	double xSize,ySize,yVel=0,yAcc=-9.81,xVel=0, time,speedMod=1, xLoc, yLoc; //Class variables
 	boolean onGround=false;
 	boolean jumped=false;
-	boolean justjumped=false;
+	boolean justJumped=false;
 	int spriteIndex=0;
 	int animationIndex=0;
 	boolean repeat=true;
@@ -33,6 +47,13 @@ public class Character {
 		ability=new Ability(30,power);
 		spriteSheet=loadSprite("Resources/Mage/"+colour+"Complete.png");
 		time=t;//Time is the time between frames
+		base=new Sprite(63,24,78,0,46,69,0,0,1,10, true, spriteSheet);
+		sprites.add(base);
+		Sprite.setTime(time);
+		sprites.add(new Sprite(40,34,167,0,48,68,0,80,4,0.18,true,spriteSheet));
+		sprites.add(new Sprite(99,28,257,0,45,78,0,65,2,0.18,true,spriteSheet));
+		sprites.add(new Sprite(615,28,310,0,44,118,49,67,4,0.24,false,spriteSheet));
+		sprites.add(new Sprite(494,29,159,0,127,69,0,135,4,0.18, false, spriteSheet));
 	}
 	
 	public static BufferedImage loadSprite(String dest) {
@@ -51,7 +72,7 @@ public class Character {
 	{
 		if(onGround)
 		{
-			justjumped=true;
+			justJumped=true;
 			yVel=8.022*multi;
 			yAcc=-25.01;
 			onGround=false;
@@ -61,7 +82,7 @@ public class Character {
 	}
 	public boolean setY(MapGen map)
 	{
-		justjumped=false;
+		justJumped=false;
 		int current = (int) (xLoc*map.blocksWide);
 		checkYCollision(map,current);
 		if(direction.jump)jump(1);
@@ -167,57 +188,31 @@ public class Character {
 		}
 		return "null";
 	}
-	public BufferedImage getAnimationSprite()
-	{
-		int temp[]=spriteValues[animationIndex];
-		int tempIndex=spriteIndex/temp[6];
-		if(!repeat&&tempIndex>temp[5])spriteIndex=temp[5]-1;
-		else tempIndex=tempIndex%temp[5];
-		//tempIndex=3;
-		if(right)return spriteSheet.getSubimage(temp[0]+temp[2]*tempIndex, temp[1], temp[3], temp[4]);
-		else return spriteSheet.getSubimage(1147-temp[0]-temp[3]-temp[2]*tempIndex, temp[1]+622, temp[3], temp[4]);
-	}
+
+	
 	
 	public BufferedImage Animate(MapGen map)
 	{
 		if(direction.ability)abilities();
-		
-		boolean changeY=setY(map);
+		setY(map);
         boolean changeX=setX(map);
-        if(changeX && direction.right)right=true;
+        if(changeX && direction.right)right=true;//Find out which way the character moved
         else if(changeX)right=false;
-        if((direction.ability&&ability.active) || abilAn)
+        
+        if(ability.active)
         {
-        	if(!abilAn)
-        	{
-        		animationIndex=ability.animationIndex;
-        		spriteIndex=0;
-        		abilAn=true;
-        	}
-        	else
-        	{
-        		spriteIndex++;
-        	}
-        	if(spriteIndex>spriteValues[animationIndex][5]*spriteValues[animationIndex][6])
-        	{
-        		abilAn=false;
-        		ability.active=false;
-        	}
+        	
+        	if(sprites.get(animationIndex).pastFinal(spriteIndex))ability.active=false;
+        	spriteIndex++;
         }
-        else if(changeY&& jumped)
-    	{
-    		if(justjumped)
-    		{
-        		animationIndex=0;
-        		spriteIndex=0;
-        	}
-        	else if(animationIndex!=2)
+        else if(!onGround&&jumped)
+        {
+        	if(animationIndex!=2)
         	{
-        		spriteIndex=0;
         		animationIndex=2;
-        		repeat=false;
+        		spriteIndex=0;
         	}
-    		spriteIndex++;
+        	spriteIndex++;
         }
         else if(changeX)
         {
@@ -225,16 +220,12 @@ public class Character {
         	{
         		spriteIndex=0;
         		animationIndex=1;
-        		repeat=true;
         	}
         	spriteIndex++;
+        	
         }
-        else
-        {
-        	animationIndex=0;
-        	spriteIndex=0;
-        }
-    	return getAnimationSprite();
+        else animationIndex=0;
+    	return sprites.get(animationIndex).getSprite(spriteIndex, right );
 	}
 	public void abilities()
 	{
@@ -242,10 +233,61 @@ public class Character {
 		{
 			switch(ability.name)
 			{
-				case"superjump":if(onGround)ability.active=true;jump(2.0);break;
-				case"lightningbolt":ability.active=true;break;
+				case"superjump":if(onGround)
+					{
+					System.out.println("In here");
+						ability.active=true;
+						jump(2.0);
+						animationIndex=ability.animationIndex;
+		        		spriteIndex=0;
+					}break;
+				case"lightningbolt":
+					{
+						animationIndex=ability.animationIndex;
+						spriteIndex=0;
+						ability.active=true;
+					}break;
 			}
 		}
 	}
+	public void draw(Graphics2D g2d, int xScreen, int yScreen, MapGen map, ImageObserver newThis)
+	{
+		
+
+		BufferedImage image=Animate(map);
+		Sprite temp=sprites.get(animationIndex);
+		int xVal;
+		if(right)xVal=(int)((xLoc-xSize*temp.left/(base.left+base.right))*xScreen);
+		else xVal=(int)((xLoc+xSize*temp.x2/(base.left+base.right)-xSize*temp.right/(base.left+base.right))*xScreen);
+    	
+    	double yVal=yLoc-(temp.up*ySize/base.up)+ySize;
+    	double wid=(xSize*(double)(temp.left+temp.right)/(double)(base.left+base.right));
+    	double hei=(ySize*(double)(temp.up+temp.down)/(double)(base.up+base.down));
+    	g2d.drawImage(image,xVal,(int)(yScreen*yVal),(int)(xScreen*wid),(int)(yScreen*hei), newThis);
+	}
+	
    
+}
+class Direction
+{
+	boolean right;
+	boolean left;
+	boolean jump;
+	boolean ability;
+	public Direction()
+	{
+		right=false;
+		left=false;
+		jump=false;
+		ability=false;
+	}
+	
+	public void reset()
+	{
+		right=false;
+		left=false;
+		jump=false;
+		ability=false;
+	}
+		
 }
