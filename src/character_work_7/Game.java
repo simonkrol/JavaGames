@@ -69,8 +69,8 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        mainChar=addChar("Aqua", "superjump");
-        secondaryChar=addChar("Pink", "lightningbolt");
+        mainChar=addChar("Red", "superjump");
+        secondaryChar=addChar("Red", "lightningbolt");
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setVisible(true);

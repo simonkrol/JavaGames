@@ -52,8 +52,9 @@ public class Character {
 		Sprite.setTime(time);
 		sprites.add(new Sprite(40,34,167,0,48,68,0,80,4,0.18,true,spriteSheet));
 		sprites.add(new Sprite(99,28,257,0,45,78,0,65,2,0.18,true,spriteSheet));
-		sprites.add(new Sprite(615,28,310,0,44,118,49,67,4,0.24,false,spriteSheet));
-		sprites.add(new Sprite(494,29,159,0,127,69,0,135,4,0.18, false, spriteSheet));
+		sprites.add(new Sprite(615,28,310,0,44,118,49,67,4,0.12,false,spriteSheet));
+		sprites.add(new Sprite(494,29,159,0,127,69,0,135,4,0.12, false, spriteSheet));
+		sprites.add(new Sprite(252,34,434,53,84,61,0,146,11,0.09, false, spriteSheet));
 	}
 	
 	public static BufferedImage loadSprite(String dest) {
@@ -235,7 +236,6 @@ public class Character {
 			{
 				case"superjump":if(onGround)
 					{
-					System.out.println("In here");
 						ability.active=true;
 						jump(2.0);
 						animationIndex=ability.animationIndex;
@@ -243,9 +243,12 @@ public class Character {
 					}break;
 				case"lightningbolt":
 					{
-						animationIndex=ability.animationIndex;
-						spriteIndex=0;
-						ability.active=true;
+						if(!ability.active)
+						{
+							animationIndex=ability.animationIndex;
+							spriteIndex=0;
+							ability.active=true;
+						}
 					}break;
 			}
 		}
