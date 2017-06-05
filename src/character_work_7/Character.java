@@ -259,10 +259,8 @@ public class Character {
 
 		BufferedImage image=Animate(map);
 		Sprite temp=sprites.get(animationIndex);
-		int xVal;
-		xVal=(int) (xScreen*(xLoc-(temp.left)*xSize/base.right));
+		int xVal=(int) (xScreen*(xLoc-(temp.left)*xSize/base.right));
 		if(!right)xVal-=(int)(xScreen*(temp.right-temp.x2)*xSize/base.right);
-		System.out.println(xLoc);
 		
     	double yVal=yLoc-(temp.up*ySize/base.up)+ySize;
     	double wid=(xSize*(double)(temp.left+temp.right)/(double)(base.left+base.right));
