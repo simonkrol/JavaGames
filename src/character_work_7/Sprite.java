@@ -42,6 +42,7 @@ public class Sprite {
 		if(facing)return spriteSheet.getSubimage(x-left+toNext*temp,y-up,left+right, up+down);
 		else return spriteSheet.getSubimage(1878 -x-right-toNext*temp, y+622-up, left+right, up+down);
 	}
+	
 	public static void setTime(double t)
 	{
 		time=t;

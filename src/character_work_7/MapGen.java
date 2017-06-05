@@ -24,17 +24,14 @@ public class MapGen
 	
 	public MapGen()//Collect images, create Platform list, create grassy array and generate a random integer as the map wideness
 	{
-		//blocksWide= ThreadLocalRandom.current().nextInt(32, 16 + 1);
-		blocksWide=37;
-		System.out.println(blocksWide);
+		blocksWide= ThreadLocalRandom.current().nextInt(32, 64 + 1);
+
 		clouds=kit.getImage("Resources/SkyBackground.jpg");
 		dirt=kit.getImage("Resources/Dirt.png");
 		grass[0]=kit.getImage("Resources/Grass.png");
 		grass[1]=kit.getImage("Resources/Grass1.png");
 		grass[2]=kit.getImage("Resources/Grass2.png");
 		platforms=new ArrayList<Platform>();
-		grassy=new int[blocksWide];
-		grassT=new int[blocksWide];
 		generateTerrain();
 		
 		
@@ -50,7 +47,7 @@ public class MapGen
 	public void generateTerrain()
 	{
 		int rand;
-		int starting=(int)(blocksWide*0.25);//Choose the first grass block
+		int starting=(int)(blocksWide*0.15);//Choose the first grass block
 		blocksTall=(int)(blocksWide*0.6);
 		for(int i=0;i<blocksWide;i++)
 		{
@@ -58,18 +55,13 @@ public class MapGen
 			rand=ThreadLocalRandom.current().nextInt(0,3);	
 			if(rand!=0)
 			{
-				rand=ThreadLocalRandom.current().nextInt(-2,3);
+				rand=ThreadLocalRandom.current().nextInt(-1,2);
 			}
-			rand=1;
 			if(starting+rand<blocksTall-2 && starting+rand>4)	//Make sure new position isn't too close to the top or bottom
 			{
 				starting+=rand;
 			}
-			else starting-=rand;
-			grassy[i]=starting;
-			grassT[i]=ThreadLocalRandom.current().nextInt(0,3);
-			//Generate a platform to allow for collision detection
-			platforms.add(new Platform((double)i/blocksWide,(double)starting/blocksTall,1.0/blocksWide,1.0/blocksWide));
+			platforms.add(new Platform((double)i/blocksWide,(double)starting/blocksTall,1.0/blocksWide,1.0/blocksTall));
 		}
 		platforms.add(new Platform(0.0,0.0,0.0,0.0));
 	}
@@ -78,21 +70,13 @@ public class MapGen
 	 */
 	public void draw(int xSize, int ySize, Graphics2D g2)
 	{
-		int grassY; //The y value of the current grass block
 		mapPainter.paint(clouds, 0, 0, xSize, ySize,ySize,g2 );//Draw the initial background
-		for(int i=0;i<blocksWide;i++)
+		for(Platform temp : platforms)
 		{
-			grassY=grassy[i];
-			mapPainter.paint(grass[grassT[i]], (xSize/blocksWide*i), grassY*ySize/blocksTall, xSize/blocksWide, ySize/blocksTall, ySize, g2);
-			
-			mapPainter.paint(dirt, (xSize/blocksWide*i), 0, xSize/blocksWide, grassY*ySize/blocksTall, ySize, g2);
-			//mapPainter.paint(grass[0], xSize*i/blocksWide, grassY*ySize/blocksTall, xSize/blocksWide, ySize/blocksTall, ySize, g2);
-			//mapPainter.paint(grass[grassT[i]], i*xSize/blocksWide,grassY*ySize/blocksTall, xSize/blocksWide, ySize/blocksTall,ySize, g2 );
-			//Draw the grass and fill in all the dirt blocks below it, then break and move to the next block
-			//mapPainter.paint(dirt, i*xSize/blocksWide,0, xSize/blocksWide, grassy[i]*ySize/blocksTall, ySize, g2);
-			
-			
+			mapPainter.paint(grass[0], (int)(temp.xPos*xSize), (int)(temp.yPos*ySize), (int)(temp.xSize*xSize)+2,(int)(temp.ySize*ySize),ySize, g2);
+			mapPainter.paint(dirt, (int)(temp.xPos*xSize), 0, (int)(temp.xSize*xSize)+2, (int)(temp.yPos*ySize), ySize, g2);
 		}
+	
 	}
 
 }

@@ -93,7 +93,7 @@ public class Character {
 		if(direction.jump)jump(1);
 		if(!onGround)	//Calculate actual changes in motion and position	
 		{
-			yLoc-=(yVel*time*ySize/2);//Convert from m/s to pixels per 0.015 seconds
+			yLoc+=(yVel*time*ySize/2);//Convert from m/s to pixels per 0.015 seconds
 			yVel+=yAcc*time;//Reduce current velocity
 			return true;
 		}
@@ -141,12 +141,13 @@ public class Character {
 			temp=map.platforms.get(current+i);//Get the platforms and check for collisions
 			if(temp.xPos+temp.xSize-xLoc>0.2/map.blocksWide && xLoc+xSize-temp.xPos>0.2/map.blocksWide)
 			{
-				if(yLoc+ySize>=temp.yPos)
+				//System.out.println(yLoc);
+				//System.out.println(temp.yPos+temp.ySize);
+				if(yLoc<temp.yPos+temp.ySize)
 				{
-					if(yLoc+ySize-temp.yPos>0.1/map.blocksTall && yLoc+ySize-temp.yPos<0.8/map.blocksTall)yLoc-=0.005;
+					if(yLoc+0.1/map.blocksTall<temp.yPos+temp.ySize && yLoc-temp.yPos-temp.ySize>-0.8/map.blocksTall)yLoc+=0.005;
 					if(yVel<0)
 					{
-						yVel=0;
 						setGround();
 					}
 					collide=true;
@@ -180,6 +181,7 @@ public class Character {
 					if(temp.xPos+temp.xSize-xLoc<0.02)//Determine which side collided and return the response 
 					{
 						return "left";
+						
 					}
 					else if(xLoc+xSize-temp.xPos<0.02)
 					{
@@ -263,13 +265,14 @@ public class Character {
 
 		BufferedImage image=Animate(map);
 		Sprite temp=sprites.get(animationIndex);
-		int xVal=(int) (xScreen*(xLoc-(temp.left)*xSize/base.right));
-		if(!right)xVal-=(int)(xScreen*(temp.right-temp.x2)*xSize/base.right);
+		double xVal= (xLoc-(temp.left)*xSize/base.right);
+		if(!right)xVal-=(temp.right-temp.x2)*xSize/base.right;
 		
-    	double yVal=yLoc-(temp.up*ySize/base.up)+ySize;
+    	double yVal=yLoc-(temp.down*ySize/base.up);
     	double wid=(xSize*(double)(temp.left+temp.right)/(double)(base.left+base.right));
     	double hei=(ySize*(double)(temp.up+temp.down)/(double)(base.up+base.down));
-    	g2d.drawImage(image,xVal,(int)(yScreen*yVal),(int)(xScreen*wid),(int)(yScreen*hei), newThis);
+    	charPainter.paint(image, (int)(xVal*xScreen), (int)(yVal*yScreen), (int)(xScreen*wid),(int)( hei*yScreen), yScreen, g2d);
+    	//g2d.drawImage(image,xVal,(int)(yScreen*yVal),(int)(xScreen*wid),(int)(yScreen*hei), newThis);
 	}
 	
    

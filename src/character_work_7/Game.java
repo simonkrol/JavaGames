@@ -21,7 +21,7 @@ import javax.swing.KeyStroke;
 @SuppressWarnings("serial")
 
 public class Game extends JPanel {
-	final static double time=1.5;//The time between cycles, 1.0/time gives an average fps
+	final static double time=0.030;//The time between cycles, 1.0/time gives an average fps
 	MapGen map;
 	static List<Character> character_entities=new ArrayList<Character>();
 	int currMain=0;
@@ -29,14 +29,10 @@ public class Game extends JPanel {
 	static Character secondaryChar;
 	static Character tempChar;
 	private static JPanel mainPanel;
-	Toolkit kit;
-	Image clouds;
 	
 	
 	public Game(){
 		map =new MapGen();
-		kit = Toolkit.getDefaultToolkit(); //Class variables
-		clouds=kit.getImage("Resources/SkyBackground.jpg");
 	}
     static int xSize;
     static int ySize;
@@ -48,8 +44,6 @@ public class Game extends JPanel {
     
     public void paint(Graphics g) {
         super.paint(g);
-        Toolkit kit = Toolkit.getDefaultToolkit(); //Class variables
-        Image clouds=kit.getImage("Resources/SkyBackground.jpg");
         xSize=getWidth();
         ySize=getHeight();
         Graphics2D g2d = (Graphics2D) g;
@@ -81,7 +75,7 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        //mainChar=addChar("Red", "superjump");
+        mainChar=addChar("Red", "lightningbolt");
         //secondaryChar=addChar("Red", "lightningbolt");
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
