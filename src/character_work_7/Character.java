@@ -47,7 +47,7 @@ public class Character {
 		ability=new Ability(30,power);
 		spriteSheet=loadSprite("Resources/Mage/"+colour+"Complete.png");
 		time=t;//Time is the time between frames
-		base=new Sprite(63,24,78,0,46,69,0,0,1,10, true, spriteSheet);
+		base=new Sprite(67,23,78,4,42,69,0,0,1,10, true, spriteSheet);
 		sprites.add(base);
 		Sprite.setTime(time);
 		sprites.add(new Sprite(40,34,167,0,48,68,0,80,4,0.18,true,spriteSheet));
@@ -260,9 +260,10 @@ public class Character {
 		BufferedImage image=Animate(map);
 		Sprite temp=sprites.get(animationIndex);
 		int xVal;
-		if(right)xVal=(int)((xLoc-xSize*temp.left/(base.left+base.right))*xScreen);
-		else xVal=(int)((xLoc+xSize*temp.x2/(base.left+base.right)-xSize*temp.right/(base.left+base.right))*xScreen);
-    	
+		xVal=(int) (xScreen*(xLoc-(temp.left)*xSize/base.right));
+		if(!right)xVal-=(int)(xScreen*(temp.right-temp.x2)*xSize/base.right);
+		System.out.println(xLoc);
+		
     	double yVal=yLoc-(temp.up*ySize/base.up)+ySize;
     	double wid=(xSize*(double)(temp.left+temp.right)/(double)(base.left+base.right));
     	double hei=(ySize*(double)(temp.up+temp.down)/(double)(base.up+base.down));
