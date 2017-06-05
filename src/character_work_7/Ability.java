@@ -13,7 +13,8 @@ public class Ability {
 		switch(name)
 		{
 			case "superjump":animationIndex=3;break;
-			case "lightningbolt":animationIndex=5;break;
+			case "lightningbolt":animationIndex=4;break;
+			case "frost":animationIndex=5;break;
 			default:animationIndex=5;break;
 		}
 	}

@@ -241,21 +241,21 @@ public class Character {
 			switch(ability.name)
 			{
 				case"superjump":if(onGround)
+				{
+					ability.active=true;
+					jump(2.0);
+					animationIndex=ability.animationIndex;
+		        	spriteIndex=0;
+				}break;
+				default:
+				{
+					if(!ability.active)
 					{
-						ability.active=true;
-						jump(2.0);
 						animationIndex=ability.animationIndex;
-		        		spriteIndex=0;
-					}break;
-				case"lightningbolt":
-					{
-						if(!ability.active)
-						{
-							animationIndex=ability.animationIndex;
-							spriteIndex=0;
-							ability.active=true;
-						}
-					}break;
+						spriteIndex=0;
+						ability.active=true;
+					}
+				}
 			}
 		}
 	}
