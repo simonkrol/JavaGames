@@ -2,7 +2,9 @@ package character_work_7;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import javax.swing.KeyStroke;
 @SuppressWarnings("serial")
 
 public class Game extends JPanel {
-	final static double time=0.030;//The time between cycles, 1.0/time gives an average fps
+	final static double time=1.5;//The time between cycles, 1.0/time gives an average fps
 	MapGen map;
 	static List<Character> character_entities=new ArrayList<Character>();
 	int currMain=0;
@@ -27,10 +29,14 @@ public class Game extends JPanel {
 	static Character secondaryChar;
 	static Character tempChar;
 	private static JPanel mainPanel;
+	Toolkit kit;
+	Image clouds;
 	
 	
 	public Game(){
 		map =new MapGen();
+		kit = Toolkit.getDefaultToolkit(); //Class variables
+		clouds=kit.getImage("Resources/SkyBackground.jpg");
 	}
     static int xSize;
     static int ySize;
@@ -42,11 +48,18 @@ public class Game extends JPanel {
     
     public void paint(Graphics g) {
         super.paint(g);
-        
+        Toolkit kit = Toolkit.getDefaultToolkit(); //Class variables
+        Image clouds=kit.getImage("Resources/SkyBackground.jpg");
         xSize=getWidth();
         ySize=getHeight();
         Graphics2D g2d = (Graphics2D) g;
-        map.draw(g2d,xSize, ySize, this);//Draws the clouds and grass/dirt
+        if(MapGen.mapPainter==null)
+        {
+        	MapGen.setPainter(this);
+        	Character.setPainter(this);
+        }
+        //g2d.drawImage(clouds, 0, 0, xSize, ySize, this);
+        map.draw(xSize, ySize, g2d);//Draws the clouds and grass/dirt
         for(Character temp:character_entities)
         {
         	temp.draw(g2d,xSize,ySize,map, this);
@@ -57,7 +70,6 @@ public class Game extends JPanel {
         //g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,//Idk why these are here, not sure what they do
            // RenderingHints.VALUE_ANTIALIAS_ON);
     }
-
     
     public static Character addChar(String colour, String ability)
     {
@@ -69,8 +81,8 @@ public class Game extends JPanel {
         JFrame frame = new JFrame("Game Frame");
         frame.setExtendedState( frame.getExtendedState()|JFrame.MAXIMIZED_BOTH ); //Maximize the frame
         game=new Game();
-        mainChar=addChar("Red", "superjump");
-        secondaryChar=addChar("Red", "lightningbolt");
+        //mainChar=addChar("Red", "superjump");
+        //secondaryChar=addChar("Red", "lightningbolt");
         frame.add(KeyInputPanel());//Add Key Reception
         frame.add(game);
         frame.setVisible(true);

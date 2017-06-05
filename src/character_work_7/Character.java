@@ -24,6 +24,7 @@ public class Character {
 	 * Store x distance to left most point of feet of next sprite
 	 */
 	static Sprite base;
+	static Painter charPainter;
 	List<Sprite> sprites=new ArrayList<Sprite>();
 	static int[][] spriteVals={{80,9,17,30,76,1,10,69},{58,99,17,22,80,4,10}};
 	//Distance to middle in X, distance in y, left side width, right side width, distance to new sprite, number of sprites, lapses per change, height
@@ -56,7 +57,10 @@ public class Character {
 		sprites.add(new Sprite(494,29,159,0,127,69,0,135,4,0.12, false, spriteSheet));
 		sprites.add(new Sprite(252,34,434,53,84,61,0,146,11,0.09, false, spriteSheet));
 	}
-	
+	public static void setPainter( ImageObserver IO)
+	{
+		charPainter=new Painter(IO);
+	}
 	public static BufferedImage loadSprite(String dest) {
 
         BufferedImage sprite = null;
