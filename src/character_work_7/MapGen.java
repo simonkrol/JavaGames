@@ -24,7 +24,7 @@ public class MapGen
 	
 	public MapGen()//Collect images, create Platform list, create grassy array and generate a random integer as the map wideness
 	{
-		blocksWide= ThreadLocalRandom.current().nextInt(32, 64 + 1);
+		blocksWide= ThreadLocalRandom.current().nextInt(19, 20 + 1);
 
 		clouds=kit.getImage("Resources/SkyBackground.jpg");
 		dirt=kit.getImage("Resources/Dirt.png");
@@ -57,7 +57,7 @@ public class MapGen
 			{
 				rand=ThreadLocalRandom.current().nextInt(-1,2);
 			}
-			if(starting+rand<blocksTall-2 && starting+rand>4)	//Make sure new position isn't too close to the top or bottom
+			if(starting+rand<blocksTall-2 && starting+rand>2)	//Make sure new position isn't too close to the top or bottom
 			{
 				starting+=rand;
 			}

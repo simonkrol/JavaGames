@@ -48,12 +48,12 @@ public class Character {
 		ability=new Ability(30,power);
 		spriteSheet=loadSprite("Resources/Mage/"+colour+"Complete.png");
 		time=t;//Time is the time between frames
-		base=new Sprite(67,23,78,4,42,69,0,0,1,10, true, spriteSheet);
+		base=new Sprite(67,30,78,4,42,69,0,0,1,10, true, spriteSheet);
 		sprites.add(base);
 		Sprite.setTime(time);
-		sprites.add(new Sprite(40,34,167,0,48,68,0,80,4,0.18,true,spriteSheet));
+		sprites.add(new Sprite(40,30,167,0,48,68,0,80,4,0.18,true,spriteSheet));
 		sprites.add(new Sprite(99,28,257,0,45,78,0,65,2,0.18,true,spriteSheet));
-		sprites.add(new Sprite(615,28,310,0,44,118,49,67,4,0.12,false,spriteSheet));
+		sprites.add(new Sprite(615,38,310,0,44,118,49,67,4,0.12,false,spriteSheet));
 		sprites.add(new Sprite(494,29,159,0,127,69,0,135,4,0.12, false, spriteSheet));
 		sprites.add(new Sprite(252,34,434,53,84,61,0,146,11,0.09, false, spriteSheet));
 	}
@@ -266,12 +266,19 @@ public class Character {
 		BufferedImage image=Animate(map);
 		Sprite temp=sprites.get(animationIndex);
 		double xVal= (xLoc-(temp.left)*xSize/base.right);
-		if(!right)xVal-=(temp.right-temp.x2)*xSize/base.right;
+		if(animationIndex==4)
+		{
+			if(right)xVal-=(0.18/map.blocksWide);
+			else xVal+=(0.18/map.blocksWide);
+		}
+		if(!right)xVal+=(temp.left+temp.x2-temp.right)*xSize/base.right;
+		xVal+=(0.15/map.blocksWide);
+		//else xVal+=((temp.right-temp.x2)*xSize/base.right);
 		
     	double yVal=yLoc-(temp.down*ySize/base.up);
     	double wid=(xSize*(double)(temp.left+temp.right)/(double)(base.left+base.right));
     	double hei=(ySize*(double)(temp.up+temp.down)/(double)(base.up+base.down));
-    	charPainter.paint(image, (int)(xVal*xScreen), (int)(yVal*yScreen), (int)(xScreen*wid),(int)( hei*yScreen), yScreen, g2d);
+    	charPainter.paint(image, (int)(2+xVal*xScreen), (int)(yVal*yScreen), (int)(xScreen*wid),(int)( hei*yScreen), yScreen, g2d);
     	//g2d.drawImage(image,xVal,(int)(yScreen*yVal),(int)(xScreen*wid),(int)(yScreen*hei), newThis);
 	}
 	
