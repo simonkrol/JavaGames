@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class Game extends JPanel {
 	final static double time=0.030;
 	Background currBack;
 	List<Character> character_entities=new ArrayList<Character>();
-	
+	static JFrame frame;
 	private static JPanel mainPanel;
 	private static Direction direction=new Direction();
 	private static Direction tempDirection=direction;;
@@ -56,6 +57,8 @@ public class Game extends JPanel {
         	{
         	case"left":movementL=0;break;
         	case"right":movementR=0;break;
+        	//case"finish":frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));break;
+
         	}
         	if(temp.mainChar)
         	{
@@ -87,7 +90,7 @@ public class Game extends JPanel {
     
 
 	public static void main(String[] args) throws InterruptedException {
-        JFrame frame = new JFrame("Game Frame");
+        frame = new JFrame("Game Frame");
         game=new Game(xSize,ySize, "Resources/DabbingBackground.png", "Resources/Platform.png");
         game.addChar(0.2, 0.6, 0.05, 0.20, "Resources/MinecraftSprite.png", true);
         game.currBack.addPlatform(0.3, 0.45, 0.4, 0.1);

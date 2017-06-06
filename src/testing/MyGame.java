@@ -39,7 +39,11 @@ public class MyGame
 
     public static void main( String[] args )
     {
-    	if(true)if(false)System.out.print(1);
+    	for(int i=0;i<15;i++)
+    	{
+    		System.out.println(i);
+    		if(i==5)break;
+    	}
     } // end method main()
     
 }

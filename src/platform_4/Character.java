@@ -8,6 +8,7 @@ public class Character {
 	Image sprite;
 	double xSize,ySize,yVel,yAcc, time,speedMod=1, xLoc, yLoc;
 	boolean mainChar, onGround=true;
+	final double finishLine=0.9;
 	public Character(double x,double y,double xS, double yS,String dest, boolean main, double t){
 		xLoc=x;
 		yLoc=y;
@@ -73,6 +74,11 @@ public class Character {
 	}
 	public String checkXCollision(Background background)
 	{
+		if(xLoc>finishLine)
+		{
+			System.out.println("Congrats, you passed the finish line");
+			return "finish";
+		}
 		for(Platform temp: Background.platforms)
 		{
 			if(yLoc<=temp.yPos+temp.ySize && yLoc+ySize>=temp.yPos)
